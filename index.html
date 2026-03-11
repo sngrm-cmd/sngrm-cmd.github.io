@@ -12,7 +12,7 @@
             font-family: 'Inter', sans-serif; 
             color: white; 
             overflow-x: hidden;
-            /* Background color is removed from here so the fixed video shows through */
+            background-color: #050505;
         }
         .gojo-blue { color: #00d2ff; }
         .bg-gojo-blue { background-color: #00d2ff; }
@@ -50,8 +50,8 @@
 <body class="selection:bg-[#00d2ff]/30 antialiased">
 
     <div class="fixed top-0 left-0 w-full h-full z-[-1] bg-[#050505]">
-        <video autoplay loop muted playsinline class="w-full h-full object-cover opacity-30">
-            <source src="https://drive.google.com/uc?export=download&id=1mZMzQ6r500kDKAwGD1T297VOmapkJyaC" type="video/mp4">
+        <video id="bgVideo" loop muted playsinline class="w-full h-full object-cover opacity-30">
+            <source src="bg-video.mp4" type="video/mp4">
         </video>
         <div class="absolute inset-0 bg-gradient-to-b from-[#050505]/30 via-[#050505]/70 to-[#050505]/95"></div>
     </div>
@@ -59,7 +59,7 @@
     <header class="relative h-screen flex flex-col items-center justify-center text-center">
         <div class="z-10 px-4 hidden-up observe flex flex-col items-center">
             
-            <img src="Photo.jpg" alt="Profile" class="w-28 h-28 md:w-36 md:h-36 rounded-full object-cover mb-6 border-2 border-[#00d2ff]/30 shadow-[0_0_30px_rgba(0,210,255,0.2)]">
+            <img src="profile.jpg" alt="Profile" class="w-28 h-28 md:w-36 md:h-36 rounded-full object-cover mb-6 border-2 border-[#00d2ff]/30 shadow-[0_0_30px_rgba(0,210,255,0.2)]">
 
             <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-4 drop-shadow-2xl">
                 SNGRM.
@@ -68,7 +68,7 @@
                 Chemistry Graduate. <span class="gojo-blue font-bold">Visual Storyteller.</span>
             </p>
         </div>
-        <div class="absolute bottom-10 z-10 animate-bounce text-[#00d2ff] opacity-70 hidden-up observe delay-2">↓ Scroll</div>
+        <div class="absolute bottom-10 z-10 animate-bounce text-[#00d2ff] opacity-70 hidden-up observe delay-2">↓ Scroll to Begin</div>
     </header>
 
     <section class="max-w-7xl mx-auto px-6 py-32 flex flex-col md:flex-row items-center justify-between gap-10">
@@ -168,6 +168,15 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            // 1. Play Video on First Scroll
+            const bgVideo = document.getElementById('bgVideo');
+            window.addEventListener('scroll', () => {
+                if (bgVideo && bgVideo.paused) {
+                    bgVideo.play();
+                }
+            }, { once: true });
+
+            // 2. Scroll Reveal Animations
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
@@ -179,6 +188,7 @@
             const hiddenElements = document.querySelectorAll('.observe');
             hiddenElements.forEach((el) => observer.observe(el));
 
+            // 3. Floating Bubbles Pop Animation
             const bubbleObserver = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
@@ -193,4 +203,3 @@
     </script>
 </body>
 </html>
-
