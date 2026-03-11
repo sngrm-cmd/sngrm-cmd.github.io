@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SANGRAM | Chemistry & Creative Portfolio</title>
+    <title>SNGRM | Chemistry & Creative Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
         /* BASE & COLOR PALETTE */
         body { 
             font-family: 'Inter', sans-serif; 
-            background-color: #050505; /* Obsidian Black */
             color: white; 
             overflow-x: hidden;
+            /* Background color is removed from here so the fixed video shows through */
         }
         .gojo-blue { color: #00d2ff; }
         .bg-gojo-blue { background-color: #00d2ff; }
@@ -22,16 +22,10 @@
             border: 1px solid rgba(255, 255, 255, 0.05); 
         }
 
-        /* HERO VIDEO OVERLAY */
-        .video-overlay {
-            background: linear-gradient(to bottom, rgba(5,5,5,0.3) 0%, rgba(5,5,5,1) 100%);
-        }
-
-        /* SCROLL ANIMATIONS (Intersection Observer classes) */
+        /* SCROLL ANIMATIONS */
         .hidden-left { opacity: 0; transform: translateX(-100px); transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
         .hidden-right { opacity: 0; transform: translateX(100px); transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
         .hidden-up { opacity: 0; transform: translateY(50px); transition: all 0.8s ease-out; }
-        
         .show { opacity: 1; transform: translate(0); }
 
         /* FLOATING BUBBLES EFFECT */
@@ -41,12 +35,7 @@
             transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 0 20px rgba(0, 210, 255, 0.1);
         }
-        .bubble.pop {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-        }
-        
-        /* Continuous float animation after popping */
+        .bubble.pop { opacity: 1; transform: scale(1) translateY(0); }
         @keyframes float {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
@@ -60,15 +49,20 @@
 </head>
 <body class="selection:bg-[#00d2ff]/30 antialiased">
 
-    <header class="relative h-screen flex flex-col items-center justify-center text-center overflow-hidden">
-        <video autoplay loop muted playsinline class="absolute z-0 w-auto min-w-full min-h-full max-w-none object-cover opacity-50 pointer-events-none">
+    <div class="fixed top-0 left-0 w-full h-full z-[-1] bg-[#050505]">
+        <video autoplay loop muted playsinline class="w-full h-full object-cover opacity-30">
             <source src="https://drive.google.com/uc?export=download&id=1mZMzQ6r500kDKAwGD1T297VOmapkJyaC" type="video/mp4">
         </video>
-        <div class="absolute inset-0 z-0 video-overlay pointer-events-none"></div>
-        
-        <div class="z-10 px-4 hidden-up observe">
+        <div class="absolute inset-0 bg-gradient-to-b from-[#050505]/30 via-[#050505]/70 to-[#050505]/95"></div>
+    </div>
+
+    <header class="relative h-screen flex flex-col items-center justify-center text-center">
+        <div class="z-10 px-4 hidden-up observe flex flex-col items-center">
+            
+            <img src="Photo.jpg" alt="Profile" class="w-28 h-28 md:w-36 md:h-36 rounded-full object-cover mb-6 border-2 border-[#00d2ff]/30 shadow-[0_0_30px_rgba(0,210,255,0.2)]">
+
             <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-4 drop-shadow-2xl">
-                SANGRAM.
+                SNGRM.
             </h1>
             <p class="text-xl md:text-3xl font-light text-gray-300 max-w-3xl mx-auto drop-shadow-md">
                 Chemistry Graduate. <span class="gojo-blue font-bold">Visual Storyteller.</span>
@@ -77,7 +71,7 @@
         <div class="absolute bottom-10 z-10 animate-bounce text-[#00d2ff] opacity-70 hidden-up observe delay-2">↓ Scroll</div>
     </header>
 
-    <section class="max-w-7xl mx-auto px-6 py-32 overflow-hidden flex flex-col md:flex-row items-center justify-between gap-10">
+    <section class="max-w-7xl mx-auto px-6 py-32 flex flex-col md:flex-row items-center justify-between gap-10">
         <div class="w-full md:w-1/4 hidden-left observe">
             <img src="https://media.giphy.com/media/BpRX8bmgijFqhuo8a6/giphy.gif" alt="Aesthetic left" class="rounded-2xl shadow-[0_0_30px_rgba(0,210,255,0.15)] w-full object-cover aspect-square md:aspect-auto">
         </div>
@@ -94,7 +88,7 @@
         </div>
     </section>
 
-    <section class="py-20 relative overflow-hidden">
+    <section class="py-20 relative">
         <div class="max-w-4xl mx-auto px-6 text-center">
             <h2 class="text-sm font-bold tracking-[0.3em] text-gray-500 uppercase mb-12 hidden-up observe">Technical Arsenal</h2>
             
@@ -114,7 +108,6 @@
 
     <section class="max-w-6xl mx-auto px-6 py-32">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
             <div class="glass p-10 rounded-[2rem] md:col-span-2 hidden-left observe hover:border-[#00d2ff]/50 transition duration-500 group">
                 <span class="text-xs font-bold tracking-widest text-[#00d2ff] uppercase">Education</span>
                 <h3 class="text-4xl font-bold mt-4 mb-2 group-hover:text-[#00d2ff] transition">B.Sc. in Chemistry</h3>
@@ -169,13 +162,12 @@
         </a>
     </section>
 
-    <footer class="py-10 text-center text-gray-700 text-sm">
-        &copy; 2026 SANGRAM. Crafted with logic and light.
+    <footer class="py-10 text-center text-gray-700 text-sm z-10 relative">
+        &copy; 2026 SNGRM. Crafted with logic and light.
     </footer>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // Observer for standard slide/fade animations
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
@@ -187,7 +179,6 @@
             const hiddenElements = document.querySelectorAll('.observe');
             hiddenElements.forEach((el) => observer.observe(el));
 
-            // Dedicated Observer for the "Pop" Bubble Effect
             const bubbleObserver = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
@@ -202,3 +193,4 @@
     </script>
 </body>
 </html>
+
