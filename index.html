@@ -5,60 +5,200 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SANGRAM | Chemistry & Creative Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #050505; color: white; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .accent-text { color: #00ff88; } /* Chemistry Emerald */
-        .hero-gradient { background: radial-gradient(circle at center, #111 0%, #050505 100%); }
+        /* BASE & COLOR PALETTE */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #050505; /* Obsidian Black */
+            color: white; 
+            overflow-x: hidden;
+        }
+        .gojo-blue { color: #00d2ff; }
+        .bg-gojo-blue { background-color: #00d2ff; }
+        .glass { 
+            background: rgba(255, 255, 255, 0.02); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+        }
+
+        /* HERO VIDEO OVERLAY */
+        .video-overlay {
+            background: linear-gradient(to bottom, rgba(5,5,5,0.3) 0%, rgba(5,5,5,1) 100%);
+        }
+
+        /* SCROLL ANIMATIONS (Intersection Observer classes) */
+        .hidden-left { opacity: 0; transform: translateX(-100px); transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .hidden-right { opacity: 0; transform: translateX(100px); transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .hidden-up { opacity: 0; transform: translateY(50px); transition: all 0.8s ease-out; }
+        
+        .show { opacity: 1; transform: translate(0); }
+
+        /* FLOATING BUBBLES EFFECT */
+        .bubble {
+            opacity: 0;
+            transform: scale(0.5) translateY(50px);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.1);
+        }
+        .bubble.pop {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        
+        /* Continuous float animation after popping */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .floating { animation: float 4s ease-in-out infinite; }
+        .delay-1 { transition-delay: 0.1s; animation-delay: 0s; }
+        .delay-2 { transition-delay: 0.3s; animation-delay: 1s; }
+        .delay-3 { transition-delay: 0.5s; animation-delay: 2s; }
     </style>
 </head>
-<body class="selection:bg-emerald-500/30">
+<body class="selection:bg-[#00d2ff]/30 antialiased">
 
-    <section class="h-screen flex flex-col items-center justify-center text-center px-4 hero-gradient">
-        <h1 class="text-5xl md:text-7xl font-bold tracking-tighter mb-4">
-            SANGRAM.
-        </h1>
-        <p class="text-xl md:text-2xl font-light text-gray-400 max-w-2xl">
-            Chemistry Graduate. <span class="accent-text">Visual Storyteller.</span>
-        </p>
-        <p class="mt-6 text-gray-500 italic">"Blending the precision of science with the art of digital creation."</p>
-        <div class="mt-10 animate-bounce text-gray-600">↓</div>
+    <header class="relative h-screen flex flex-col items-center justify-center text-center overflow-hidden">
+        <video autoplay loop muted playsinline class="absolute z-0 w-auto min-w-full min-h-full max-w-none object-cover opacity-50 pointer-events-none">
+            <source src="https://drive.google.com/uc?export=download&id=1mZMzQ6r500kDKAwGD1T297VOmapkJyaC" type="video/mp4">
+        </video>
+        <div class="absolute inset-0 z-0 video-overlay pointer-events-none"></div>
+        
+        <div class="z-10 px-4 hidden-up observe">
+            <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-4 drop-shadow-2xl">
+                SANGRAM.
+            </h1>
+            <p class="text-xl md:text-3xl font-light text-gray-300 max-w-3xl mx-auto drop-shadow-md">
+                Chemistry Graduate. <span class="gojo-blue font-bold">Visual Storyteller.</span>
+            </p>
+        </div>
+        <div class="absolute bottom-10 z-10 animate-bounce text-[#00d2ff] opacity-70 hidden-up observe delay-2">↓ Scroll</div>
+    </header>
+
+    <section class="max-w-7xl mx-auto px-6 py-32 overflow-hidden flex flex-col md:flex-row items-center justify-between gap-10">
+        <div class="w-full md:w-1/4 hidden-left observe">
+            <img src="https://media.giphy.com/media/BpRX8bmgijFqhuo8a6/giphy.gif" alt="Aesthetic left" class="rounded-2xl shadow-[0_0_30px_rgba(0,210,255,0.15)] w-full object-cover aspect-square md:aspect-auto">
+        </div>
+        
+        <div class="w-full md:w-2/4 text-center hidden-up observe z-10">
+            <h2 class="text-sm font-bold tracking-[0.3em] gojo-blue uppercase mb-4">About Me</h2>
+            <p class="text-2xl md:text-4xl font-light leading-relaxed text-gray-200">
+                A dedicated B.Sc. Chemistry graduate <span class="gojo-blue font-bold">(8.0 CGPA)</span> bridging the gap between analytical science and digital storytelling.
+            </p>
+        </div>
+
+        <div class="w-full md:w-1/4 hidden-right observe">
+            <img src="https://media.giphy.com/media/ia5LYikJVW43PIig3S/giphy.gif" alt="Zenitsu right" class="rounded-2xl shadow-[0_0_30px_rgba(0,210,255,0.15)] w-full object-cover aspect-square md:aspect-auto">
+        </div>
     </section>
 
-    <section class="max-w-6xl mx-auto px-6 py-20">
-        <h2 class="text-3xl font-bold mb-10 tracking-tight">THE SPECS</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <section class="py-20 relative overflow-hidden">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-sm font-bold tracking-[0.3em] text-gray-500 uppercase mb-12 hidden-up observe">Technical Arsenal</h2>
             
-            <div class="glass p-8 rounded-3xl md:col-span-2 flex flex-col justify-between hover:border-emerald-500/50 transition">
-                <div>
-                    <span class="text-xs font-bold tracking-widest text-emerald-500 uppercase">Education</span>
-                    <h3 class="text-4xl font-bold mt-2">B.Sc. Chemistry</h3>
+            <div class="flex flex-wrap justify-center gap-6">
+                <div class="bubble delay-1 glass px-8 py-4 rounded-full border border-[#00d2ff]/30 text-[#00d2ff] font-bold text-xl backdrop-blur-md">
+                    <div class="floating">After Effects</div>
                 </div>
-                <p class="text-gray-400 mt-4">Graduated with an <span class="text-white">8.0 CGPA</span>. Specialized in Molecular structures and Electrochemistry.</p>
-            </div>
-
-            <div class="glass p-8 rounded-3xl hover:border-blue-500/50 transition">
-                <span class="text-xs font-bold tracking-widest text-blue-400 uppercase">Visuals</span>
-                <h3 class="text-2xl font-bold mt-2">Sony/Zeiss Aesthetic</h3>
-                <p class="text-gray-400 mt-2 text-sm">Photography & Videography with a focus on cinematic color science.</p>
-            </div>
-
-            <div class="glass p-8 rounded-3xl hover:border-purple-500/50 transition">
-                <span class="text-xs font-bold tracking-widest text-purple-400 uppercase">Editing</span>
-                <h3 class="text-2xl font-bold mt-2">Post-Production</h3>
-                <p class="text-gray-400 mt-2 text-sm">After Effects, Node Video, and CapCut specialist.</p>
-            </div>
-
-            <div class="glass p-8 rounded-3xl md:col-span-2 hover:border-orange-500/50 transition">
-                <span class="text-xs font-bold tracking-widest text-orange-400 uppercase">Hardware</span>
-                <h3 class="text-3xl font-bold mt-2">PC Architect</h3>
-                <p class="text-gray-400 mt-4">Ryzen 5 5600G specialist. Deeply interested in hardware optimization and custom PC builds.</p>
+                <div class="bubble delay-2 glass px-8 py-4 rounded-full border border-[#00d2ff]/30 text-[#00d2ff] font-bold text-xl backdrop-blur-md">
+                    <div class="floating">Node Video</div>
+                </div>
+                <div class="bubble delay-3 glass px-8 py-4 rounded-full border border-[#00d2ff]/30 text-[#00d2ff] font-bold text-xl backdrop-blur-md">
+                    <div class="floating">Ryzen Architecture</div>
+                </div>
             </div>
         </div>
     </section>
 
-    <section class="max-w-6xl mx-auto px-6 py-20">
-        <h2 class="text-3xl font-bold mb-10 tracking-tight">CREATIVE WORK</h2>
+    <section class="max-w-6xl mx-auto px-6 py-32">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div class="glass p-10 rounded-[2rem] md:col-span-2 hidden-left observe hover:border-[#00d2ff]/50 transition duration-500 group">
+                <span class="text-xs font-bold tracking-widest text-[#00d2ff] uppercase">Education</span>
+                <h3 class="text-4xl font-bold mt-4 mb-2 group-hover:text-[#00d2ff] transition">B.Sc. in Chemistry</h3>
+                <p class="text-gray-400 text-lg">Core competencies in <span class="text-white">Electrochemistry</span> and <span class="text-white">Calculus</span>.</p>
+            </div>
+
+            <div class="glass p-10 rounded-[2rem] hidden-right observe hover:border-[#00d2ff]/50 transition duration-500 group">
+                <span class="text-xs font-bold tracking-widest text-gray-400 uppercase">Visuals</span>
+                <h3 class="text-2xl font-bold mt-4 group-hover:text-[#00d2ff] transition">Sony/Zeiss Aesthetic</h3>
+                <p class="text-gray-400 mt-2 text-sm">Cinematic color science & precision photography.</p>
+            </div>
+
+            <div class="glass p-10 rounded-[2rem] hidden-left observe hover:border-[#00d2ff]/50 transition duration-500 group">
+                <span class="text-xs font-bold tracking-widest text-gray-400 uppercase">Editing</span>
+                <h3 class="text-2xl font-bold mt-4 group-hover:text-[#00d2ff] transition">Post-Production</h3>
+                <p class="text-gray-400 mt-2 text-sm">Mastering flow, timing, and VFX composition.</p>
+            </div>
+
+            <div class="glass p-10 rounded-[2rem] md:col-span-2 hidden-right observe hover:border-[#00d2ff]/50 transition duration-500 group">
+                <span class="text-xs font-bold tracking-widest text-[#00d2ff] uppercase">Hardware</span>
+                <h3 class="text-3xl font-bold mt-4 group-hover:text-[#00d2ff] transition">Tech Enthusiast</h3>
+                <p class="text-gray-400 mt-4">Understanding the hardware that powers digital art, from component optimization to system stability.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="max-w-6xl mx-auto px-6 py-20 hidden-up observe">
+        <h2 class="text-2xl font-bold mb-10 tracking-tight text-center">VISUAL ARCHIVE</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="aspect
+            <div class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer">
+                <div class="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-110 group-hover:opacity-50" style="background-image: url('https://via.placeholder.com/400x400/222/00d2ff?text=JJK+Edit')"></div>
+                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 backdrop-blur-sm">
+                    <span class="font-bold tracking-widest text-sm">VIEW PROJECT</span>
+                </div>
+            </div>
+            <div class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer">
+                <div class="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-110 group-hover:opacity-50" style="background-image: url('https://via.placeholder.com/400x400/222/00d2ff?text=Chemistry')"></div>
+            </div>
+            <div class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer">
+                <div class="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-110 group-hover:opacity-50" style="background-image: url('https://via.placeholder.com/400x400/222/00d2ff?text=VFX')"></div>
+            </div>
+            <div class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer">
+                <div class="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-110 group-hover:opacity-50" style="background-image: url('https://via.placeholder.com/400x400/222/00d2ff?text=Photography')"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="max-w-4xl mx-auto px-6 py-32 text-center hidden-up observe">
+        <h2 class="text-4xl md:text-6xl font-black mb-8">Ready to create?</h2>
+        <a href="#" class="inline-block bg-white text-black px-12 py-4 rounded-full font-bold text-lg hover:bg-[#00d2ff] hover:text-white transition duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(0,210,255,0.6)]">
+            Connect With Me
+        </a>
+    </section>
+
+    <footer class="py-10 text-center text-gray-700 text-sm">
+        &copy; 2026 SANGRAM. Crafted with logic and light.
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Observer for standard slide/fade animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('show');
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+            const hiddenElements = document.querySelectorAll('.observe');
+            hiddenElements.forEach((el) => observer.observe(el));
+
+            // Dedicated Observer for the "Pop" Bubble Effect
+            const bubbleObserver = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('pop');
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            const bubbles = document.querySelectorAll('.bubble');
+            bubbles.forEach((el) => bubbleObserver.observe(el));
+        });
+    </script>
+</body>
+</html>
