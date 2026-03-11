@@ -142,34 +142,53 @@
 
     <section class="max-w-6xl mx-auto px-6 py-20 hidden-up observe">
         <h2 class="text-2xl font-bold mb-10 tracking-tight text-center">VISUAL ARCHIVE</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer">
-                <div class="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-110 group-hover:opacity-50" style="background-image: url('https://via.placeholder.com/400x400/222/00d2ff?text=JJK+Edit')"></div>
-                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 backdrop-blur-sm">
-                    <span class="font-bold tracking-widest text-sm">VIEW PROJECT</span>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            
+            <div onclick="toggleVideo(this)" class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer shadow-[0_0_25px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] transition-all duration-300 transform active:scale-95">
+                <video src="B1Meteor.mp4" loop muted playsinline class="absolute inset-0 w-full h-full object-cover transition duration-700"></video>
+                <div class="overlay-content absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 backdrop-blur-sm bg-black/40">
+                    <i class="fa-solid fa-play text-white text-3xl mb-3 drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"></i>
+                    <span class="font-bold tracking-widest text-sm text-white drop-shadow-lg">METEOR VFX</span>
                 </div>
             </div>
-            <div class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer">
-                <div class="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-110 group-hover:opacity-50" style="background-image: url('https://via.placeholder.com/400x400/222/00d2ff?text=Chemistry')"></div>
+
+            <div onclick="toggleVideo(this)" class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer shadow-[0_0_25px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] transition-all duration-300 transform active:scale-95">
+                <video src="B2Beach.mp4" loop muted playsinline class="absolute inset-0 w-full h-full object-cover transition duration-700"></video>
+                <div class="overlay-content absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 backdrop-blur-sm bg-black/40">
+                    <i class="fa-solid fa-play text-white text-3xl mb-3 drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"></i>
+                    <span class="font-bold tracking-widest text-sm text-white drop-shadow-lg">CINEMATIC</span>
+                </div>
             </div>
-            <div class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer">
-                <div class="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-110 group-hover:opacity-50" style="background-image: url('https://via.placeholder.com/400x400/222/00d2ff?text=VFX')"></div>
+
+            <div onclick="toggleVideo(this)" class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer shadow-[0_0_25px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] transition-all duration-300 transform active:scale-95">
+                <video src="B3Tiki.mp4" loop muted playsinline class="absolute inset-0 w-full h-full object-cover transition duration-700"></video>
+                <div class="overlay-content absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 backdrop-blur-sm bg-black/40">
+                    <i class="fa-solid fa-play text-white text-3xl mb-3 drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"></i>
+                    <span class="font-bold tracking-widest text-sm text-white drop-shadow-lg">ABSTRACT</span>
+                </div>
             </div>
-            <div class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer">
-                <div class="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-110 group-hover:opacity-50" style="background-image: url('https://via.placeholder.com/400x400/222/00d2ff?text=Photography')"></div>
+
+            <div onclick="toggleVideo(this)" class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer shadow-[0_0_25px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] transition-all duration-300 transform active:scale-95">
+                <video src="B4Sngrm.mp4" loop muted playsinline class="absolute inset-0 w-full h-full object-cover transition duration-700"></video>
+                <div class="overlay-content absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 backdrop-blur-sm bg-black/40">
+                    <i class="fa-solid fa-play text-white text-3xl mb-3 drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"></i>
+                    <span class="font-bold tracking-widest text-sm text-white drop-shadow-lg">VFX EDIT</span>
+                </div>
             </div>
+
         </div>
     </section>
 
     <section class="max-w-4xl mx-auto px-6 py-32 text-center hidden-up observe">
         <h2 class="text-4xl md:text-6xl font-black mb-8">Ready to create?</h2>
         
-        <a href="mailto:your-email@example.com" class="inline-block bg-white text-black px-12 py-4 rounded-full font-bold text-lg hover:bg-[#00d2ff] hover:text-white transition duration-300 transform active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(0,210,255,0.6)] mb-12">
+        <a href="mailto:skgartia152@gmail.com" class="inline-block bg-white text-black px-12 py-4 rounded-full font-bold text-lg hover:bg-[#00d2ff] hover:text-white transition duration-300 transform active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(0,210,255,0.6)] mb-12">
             Connect With Me
         </a>
         
         <div class="flex justify-center gap-8 mt-4">
-            <a href="https://www.youtube.com/@SANGRAMYT" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-[#00d2ff] transition duration-300 transform hover:scale-110 active:scale-90">
+            <a href="https://www.youtube.com/@SangramOfficial" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-[#00d2ff] transition duration-300 transform hover:scale-110 active:scale-90">
                 <i class="fa-brands fa-youtube text-4xl drop-shadow-md"></i>
             </a>
             <a href="https://www.instagram.com/iamsngrm" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-[#00d2ff] transition duration-300 transform hover:scale-110 active:scale-90">
@@ -186,21 +205,37 @@
     </footer>
 
     <script>
+        // --- NEW: Video Play/Pause Logic for Visual Archive ---
+        function toggleVideo(element) {
+            const video = element.querySelector('video');
+            const overlay = element.querySelector('.overlay-content');
+            
+            if (video.paused) {
+                // Play the video and hide the text/icon overlay
+                video.play();
+                overlay.style.opacity = '0'; 
+                // Remove group-hover so the overlay stays hidden while playing
+                overlay.classList.remove('group-hover:opacity-100');
+            } else {
+                // Pause the video and show the text/icon overlay again
+                video.pause();
+                overlay.style.opacity = '1';
+                overlay.classList.add('group-hover:opacity-100');
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
-            // 1. Play Video ONLY while scrolling
+            // 1. Play Background Video ONLY while scrolling
             const bgVideo = document.getElementById('bgVideo');
             let isScrolling;
 
             window.addEventListener('scroll', () => {
-                // Clear the timeout while scrolling is actively happening
                 window.clearTimeout(isScrolling);
 
-                // Play the video if it's currently paused
                 if (bgVideo && bgVideo.paused) {
                     bgVideo.play().catch(e => console.log("Video playback blocked until interaction:", e));
                 }
 
-                // Set a timeout to pause the video 150ms after scrolling stops
                 isScrolling = setTimeout(() => {
                     if (bgVideo && !bgVideo.paused) {
                         bgVideo.pause();
