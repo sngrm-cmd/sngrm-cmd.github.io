@@ -168,13 +168,26 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // 1. Play Video on First Scroll
+            // 1. Play Video ONLY while scrolling
             const bgVideo = document.getElementById('bgVideo');
+            let isScrolling;
+
             window.addEventListener('scroll', () => {
+                // Clear the timeout while scrolling is actively happening
+                window.clearTimeout(isScrolling);
+
+                // Play the video if it's currently paused
                 if (bgVideo && bgVideo.paused) {
-                    bgVideo.play();
+                    bgVideo.play().catch(e => console.log("Video playback blocked until interaction:", e));
                 }
-            }, { once: true });
+
+                // Set a timeout to pause the video 150ms after scrolling stops
+                isScrolling = setTimeout(() => {
+                    if (bgVideo && !bgVideo.paused) {
+                        bgVideo.pause();
+                    }
+                }, 150);
+            });
 
             // 2. Scroll Reveal Animations
             const observer = new IntersectionObserver((entries) => {
