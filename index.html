@@ -51,7 +51,7 @@
 <body class="selection:bg-[#00d2ff]/30 antialiased">
 
     <div class="fixed top-0 left-0 w-full h-full z-[-1] bg-[#050505]">
-        <video id="bgVideo" muted playsinline preload="metadata" class="w-full h-full object-cover opacity-30">
+        <video id="bgVideo" loop muted playsinline class="w-full h-full object-cover opacity-30">
             <source src="bg-video.mp4" type="video/mp4">
         </video>
         <div class="absolute inset-0 bg-gradient-to-b from-[#050505]/30 via-[#050505]/70 to-[#050505]/95"></div>
@@ -204,17 +204,20 @@
         &copy; 2026 SNGRM. Crafted with logic and light.
     </footer>
 
-        <script>
-        // --- Video Play/Pause Logic for Visual Archive ---
+    <script>
+        // --- NEW: Video Play/Pause Logic for Visual Archive ---
         function toggleVideo(element) {
             const video = element.querySelector('video');
             const overlay = element.querySelector('.overlay-content');
             
             if (video.paused) {
+                // Play the video and hide the text/icon overlay
                 video.play();
                 overlay.style.opacity = '0'; 
+                // Remove group-hover so the overlay stays hidden while playing
                 overlay.classList.remove('group-hover:opacity-100');
             } else {
+                // Pause the video and show the text/icon overlay again
                 video.pause();
                 overlay.style.opacity = '1';
                 overlay.classList.add('group-hover:opacity-100');
@@ -222,31 +225,25 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            
-            // --- NEW: Scroll-Scrubbing for Background Video ---
+            // 1. Play Background Video ONLY while scrolling
             const bgVideo = document.getElementById('bgVideo');
-            
-            // Force pause the video initially so it waits for scroll
-            bgVideo.addEventListener('loadedmetadata', () => {
-                bgVideo.pause();
-            });
+            let isScrolling;
 
             window.addEventListener('scroll', () => {
-                if (bgVideo.duration) {
-                    // Calculate scroll percentage (0 at top, 1 at bottom)
-                    const maxScrollTop = document.documentElement.scrollHeight - window.innerHeight;
-                    const scrollFraction = window.scrollY / maxScrollTop;
-                    
-                    // Map scroll percentage to video timeline
-                    // requestAnimationFrame keeps the visual update perfectly smooth
-                    window.requestAnimationFrame(() => {
-                        // Math.min prevents setting a time longer than the video itself
-                        bgVideo.currentTime = Math.min(bgVideo.duration * scrollFraction, bgVideo.duration - 0.1);
-                    });
+                window.clearTimeout(isScrolling);
+
+                if (bgVideo && bgVideo.paused) {
+                    bgVideo.play().catch(e => console.log("Video playback blocked until interaction:", e));
                 }
+
+                isScrolling = setTimeout(() => {
+                    if (bgVideo && !bgVideo.paused) {
+                        bgVideo.pause();
+                    }
+                }, 150);
             });
 
-            // --- Scroll Reveal Animations ---
+            // 2. Scroll Reveal Animations
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
@@ -258,7 +255,7 @@
             const hiddenElements = document.querySelectorAll('.observe');
             hiddenElements.forEach((el) => observer.observe(el));
 
-            // --- Floating Bubbles Pop Animation ---
+            // 3. Floating Bubbles Pop Animation
             const bubbleObserver = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
@@ -270,6 +267,8 @@
             const bubbles = document.querySelectorAll('.bubble');
             bubbles.forEach((el) => bubbleObserver.observe(el));
         });
-        </script>
+    </script>
 </body>
 </html>
+
+
