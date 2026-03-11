@@ -3,121 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sangram | Portfolio</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;900&display=swap" rel="stylesheet">
+    <title>SANGRAM | Chemistry & Creative Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #030303;
-            --accent: #00d2ff;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.08);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-
-        /* SaaS Style Sticky Profile */
-        .profile-wrapper {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 350px;
-            height: 350px;
-            z-index: 100;
-            pointer-events: none;
-        }
-
-        .profile-pic {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--accent);
-            box-shadow: 0 0 60px rgba(0, 210, 255, 0.1);
-            background: #111;
-        }
-
-        section { min-height: 100vh; padding: 0 10% 0 50%; display: flex; align-items: center; position: relative; }
-        .hero { justify-content: center; padding: 0; }
-        .hero h1 { font-size: 15vw; font-weight: 900; letter-spacing: -10px; opacity: 0.1; }
-
-        .card {
-            background: var(--glass);
-            padding: 40px;
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            backdrop-filter: blur(20px);
-            margin-bottom: 40px;
-            opacity: 0;
-            transform: translateX(50px);
-        }
-
-        .accent { color: var(--accent); font-weight: 700; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 2px; display: block; margin-bottom: 10px; }
-        h2 { font-size: 2.2rem; margin-bottom: 15px; }
-        p { color: #aaa; line-height: 1.6; margin-bottom: 15px; }
-
-        .tag { display: inline-block; padding: 5px 12px; background: rgba(255,255,255,0.05); border-radius: 6px; font-size: 0.8rem; margin: 0 5px 5px 0; border: 1px solid var(--border); }
-
-        /* Social Buttons */
-        .social-link {
-            display: inline-block;
-            padding: 12px 24px;
-            margin: 10px 10px 0 0;
-            border-radius: 12px;
-            text-decoration: none;
-            color: white;
-            font-weight: bold;
-            background: var(--glass);
-            border: 1px solid var(--border);
-            transition: 0.3s;
-        }
-        .social-link:hover { background: var(--accent); color: black; transform: translateY(-3px); }
-
-        @media (max-width: 900px) {
-            section { padding: 0 5%; justify-content: center; }
-            .profile-wrapper { opacity: 0.2; width: 250px; height: 250px; }
-        }
-
-        html.lenis { height: auto; }
-        .lenis.lenis-smooth { scroll-behavior: auto !important; }
+        body { font-family: 'Inter', sans-serif; background-color: #050505; color: white; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .accent-text { color: #00ff88; } /* Chemistry Emerald */
+        .hero-gradient { background: radial-gradient(circle at center, #111 0%, #050505 100%); }
     </style>
 </head>
-<body>
+<body class="selection:bg-emerald-500/30">
 
-    <div class="profile-wrapper" id="profile-wrap">
-        <img src="profile.jpg" alt="Sangram" class="profile-pic" id="profile-img">
-    </div>
-
-    <section class="hero">
-        <h1 id="hero-text">SANGRAM</h1>
+    <section class="h-screen flex flex-col items-center justify-center text-center px-4 hero-gradient">
+        <h1 class="text-5xl md:text-7xl font-bold tracking-tighter mb-4">
+            SANGRAM.
+        </h1>
+        <p class="text-xl md:text-2xl font-light text-gray-400 max-w-2xl">
+            Chemistry Graduate. <span class="accent-text">Visual Storyteller.</span>
+        </p>
+        <p class="mt-6 text-gray-500 italic">"Blending the precision of science with the art of digital creation."</p>
+        <div class="mt-10 animate-bounce text-gray-600">↓</div>
     </section>
 
-    <section id="about">
-        <div class="card reveal">
-            <span class="accent">About Me</span>
-            <h2>Digital Storyteller</h2>
-            <p>A dedicated B.Sc. Chemistry graduate (8.0 CGPA). I bridge the gap between analytical science and creative arts, combining expertise in mathematics with professional-grade video editing.</p>
-            <p>Currently preparing for teaching entrance exams (OSSTET, CUET B.Ed.) to inspire future scientists.</p>
-        </div>
-    </section>
-
-    <section id="skills">
-        <div class="card reveal">
-            <span class="accent">Technical Skills</span>
-            <div style="margin-bottom: 20px;">
-                <p><strong>Chemistry:</strong> Electrochemistry, Calculus, Advanced Analysis.</p>
-                <span class="tag">After Effects</span> <span class="tag">Node Video</span> <span class="tag">CapCut</span>
-                <span class="tag">Sony/Zeiss Aesthetics</span> <span class="tag">AMD Ryzen</span>
+    <section class="max-w-6xl mx-auto px-6 py-20">
+        <h2 class="text-3xl font-bold mb-10 tracking-tight">THE SPECS</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            
+            <div class="glass p-8 rounded-3xl md:col-span-2 flex flex-col justify-between hover:border-emerald-500/50 transition">
+                <div>
+                    <span class="text-xs font-bold tracking-widest text-emerald-500 uppercase">Education</span>
+                    <h3 class="text-4xl font-bold mt-2">B.Sc. Chemistry</h3>
+                </div>
+                <p class="text-gray-400 mt-4">Graduated with an <span class="text-white">8.0 CGPA</span>. Specialized in Molecular structures and Electrochemistry.</p>
             </div>
-            <p>Interests: Jujutsu Kaisen, One-Punch Man, and Free Fire gaming.</p>
+
+            <div class="glass p-8 rounded-3xl hover:border-blue-500/50 transition">
+                <span class="text-xs font-bold tracking-widest text-blue-400 uppercase">Visuals</span>
+                <h3 class="text-2xl font-bold mt-2">Sony/Zeiss Aesthetic</h3>
+                <p class="text-gray-400 mt-2 text-sm">Photography & Videography with a focus on cinematic color science.</p>
+            </div>
+
+            <div class="glass p-8 rounded-3xl hover:border-purple-500/50 transition">
+                <span class="text-xs font-bold tracking-widest text-purple-400 uppercase">Editing</span>
+                <h3 class="text-2xl font-bold mt-2">Post-Production</h3>
+                <p class="text-gray-400 mt-2 text-sm">After Effects, Node Video, and CapCut specialist.</p>
+            </div>
+
+            <div class="glass p-8 rounded-3xl md:col-span-2 hover:border-orange-500/50 transition">
+                <span class="text-xs font-bold tracking-widest text-orange-400 uppercase">Hardware</span>
+                <h3 class="text-3xl font-bold mt-2">PC Architect</h3>
+                <p class="text-gray-400 mt-4">Ryzen 5 5600G specialist. Deeply interested in hardware optimization and custom PC builds.</p>
+            </div>
         </div>
     </section>
 
-    <section id="contact">
-        <div class="card reveal">
-            <span class="accent">Connect</span>
-            <h2>Social Media</h2>
-            <a href="https://youtube.com/sangramofficial73" class="social-link">YouTube</a>
-            <a href="
+    <section class="max-w-6xl mx-auto px-6 py-20">
+        <h2 class="text-3xl font-bold mb-10 tracking-tight">CREATIVE WORK</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="aspect
