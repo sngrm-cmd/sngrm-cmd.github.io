@@ -3,271 +3,740 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNGRM | Chemistry & Creative Portfolio</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Sangram | Elite Visual Engineering</title>
+    
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+
     <style>
-        /* BASE & COLOR PALETTE */
-        body { 
+        /* ==========================================================================
+           1. CSS VARIABLES, TYPOGRAPHY & RESET
+           ========================================================================== */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800;900&family=JetBrains+Mono:wght@300;400;700;800&display=swap');
+
+        :root {
+            --bg-deep: #010204;
+            --bg-mid: #050A14;
+            --bg-highlight: #0A1428;
+            
+            --accent-primary: #90E0AF;
+            --accent-glow: rgba(144, 224, 175, 0.6);
+            --accent-secondary: #4A88D9;
+            
+            --text-pure: #FFFFFF;
+            --text-bright: rgba(255, 255, 255, 0.9);
+            --text-dim: rgba(255, 255, 255, 0.4);
+            
+            --glass-bg: rgba(255, 255, 255, 0.015);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            
+            --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-fluid: cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        
+        html.lenis { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto; }
+        .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+        .lenis.lenis-stopped { overflow: hidden; }
+
+        body {
+            background-color: var(--bg-deep); color: var(--text-pure);
+            font-family: 'Inter', sans-serif; overflow-x: hidden;
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+            transition: background-color 1.5s var(--ease-apple);
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        h1, h2, h3, h4, .split-lines, .split-chars-dynamic { font-weight: 800; letter-spacing: -0.02em; }
+        ::selection { background: var(--accent-primary); color: #000; }
+
+        /* ==========================================================================
+           2. GLOBAL ENVIRONMENT EFFECTS (Canvas, Noise, Grid, HUD)
+           ========================================================================== */
+        #ambient-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; pointer-events: none; opacity: 0.8; }
+        
+        .gradient-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 50% 0%, var(--bg-mid) 0%, transparent 80%); z-index: -1; pointer-events: none; mix-blend-mode: screen; transition: background 1.5s var(--ease-apple); }
+        
+        .tech-grid { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 60px 60px; z-index: -1; pointer-events: none; opacity: 0.7; mask-image: radial-gradient(circle at center, black 30%, transparent 100%); -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 100%); }
+        
+        .noise { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9998; opacity: 0.05; mix-blend-mode: overlay; background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); }
+
+        .hud { position: fixed; z-index: 8000; pointer-events: none; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; }
+        .hud-top-left { top: 30px; left: 30px; }
+        .hud-bottom-right { bottom: 30px; right: 30px; text-align: right; }
+        .hud-bottom-left { bottom: 30px; left: 30px; }
+        .hud-value { color: var(--accent-primary); font-weight: 700; margin-left: 5px; }
+
+        .scroll-progress-container { position: fixed; right: 30px; top: 50%; transform: translateY(-50%); height: 30vh; width: 1px; background: rgba(255,255,255,0.1); z-index: 9000; overflow: hidden; }
+        .scroll-progress-fill { position: absolute; top: 0; left: 0; width: 100%; height: 0%; background: var(--accent-primary); box-shadow: 0 0 10px var(--accent-glow); }
+
+        /* ==========================================================================
+           3. MAGNETIC CURSOR SYSTEM
+           ========================================================================= */
+        .cursor-dot { width: 5px; height: 5px; background: var(--accent-primary); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10000; transform: translate(-50%, -50%); transition: opacity 0.3s; }
+        .cursor-ring { width: 35px; height: 35px; border: 1px solid rgba(144, 224, 175, 0.5); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.3s var(--ease-apple), height 0.3s var(--ease-apple), background 0.3s var(--ease-apple), border-color 0.3s; }
+        .cursor-hover .cursor-ring { width: 70px; height: 70px; background: rgba(144, 224, 175, 0.05); border-color: rgba(144, 224, 175, 0.8); backdrop-filter: blur(4px); }
+        .cursor-hover .cursor-dot { transform: translate(-50%, -50%) scale(0); }
+
+        /* ==========================================================================
+           4. TERMINAL BOOT PRELOADER 
+           ========================================================================== */
+        .preloader { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 100000; display: flex; flex-direction: column; justify-content: space-between; padding: 4vw; }
+        .terminal-header { font-family: 'JetBrains Mono', monospace; color: var(--text-dim); font-size: 12px; }
+        .terminal-body { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
+        .terminal-line { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--accent-primary); margin-bottom: 8px; opacity: 0; text-shadow: 0 0 5px rgba(144,224,175,0.4); }
+        .loader-math { font-family: 'Inter', sans-serif; font-size: 15vw; font-weight: 900; letter-spacing: -0.05em; line-height: 1; color: var(--text-pure); align-self: flex-end; }
+        .loader-bar-bg { width: 100%; height: 1px; background: rgba(255,255,255,0.1); margin-top: 20px; position: relative; }
+        .loader-bar-fill { position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: var(--text-pure); transition: width 0.1s; }
+
+        /* ==========================================================================
+           5. NAVIGATION UI & FIXED PROFILE PIC
+           ========================================================================== */
+        /* GUARANTEED VISIBLE FIXED PHOTO. 
+           GSAP will control opacity and position dynamically. 
+        */
+        #hero-profile-pic { 
+            position: fixed; 
+            z-index: 9500; 
+            object-fit: cover; 
+            border-radius: 50%; 
+            border: 2px solid rgba(255,255,255,0.15); 
+            pointer-events: none; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9); 
+            /* Started perfectly centered */
+            top: 35vh; left: 50vw; 
+            transform: translate(-50%, -50%);
+            width: 160px; height: 160px;
+            /* Explicitly hidden initially so the preloader looks clean */
+            opacity: 0; 
+        }
+
+        nav { position: fixed; top: 0; left: 0; width: 100%; padding: 40px 6vw; display: flex; justify-content: space-between; align-items: center; z-index: 5000; mix-blend-mode: difference; }
+        .nav-logo { display: flex; align-items: center; gap: 20px; }
+        /* Empty target for the photo to dock into */
+        .logo-placeholder { width: 50px; height: 50px; border-radius: 50%; } 
+        
+        .nav-links { display: flex; gap: 20px; }
+        .magnetic-wrap { padding: 10px 20px; display: inline-block; position: relative; }
+        .magnetic-wrap a { color: var(--text-pure); text-decoration: none; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5; transition: opacity 0.3s, color 0.3s; display: inline-block; }
+        .magnetic-wrap:hover a { opacity: 1; color: var(--accent-primary); text-shadow: 0 0 15px rgba(144,224,175,0.4); }
+
+        /* ==========================================================================
+           6. HERO SECTION (ONLY NAME & SWEEP)
+           ========================================================================== */
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; padding: 0 6vw; }
+        
+        /* This spaces the text down so the profile picture fits exactly above it */
+        .hero-spacer { height: 180px; } 
+
+        .hero-name {
             font-family: 'Inter', sans-serif; 
-            color: white; 
-            overflow-x: hidden;
-            background-color: #050505;
-        }
-        .gojo-blue { color: #00d2ff; }
-        .bg-gojo-blue { background-color: #00d2ff; }
-        .glass { 
-            background: rgba(255, 255, 255, 0.02); 
-            backdrop-filter: blur(12px); 
-            border: 1px solid rgba(255, 255, 255, 0.05); 
-        }
-
-        /* SCROLL ANIMATIONS */
-        .hidden-left { opacity: 0; transform: translateX(-100px); transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
-        .hidden-right { opacity: 0; transform: translateX(100px); transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
-        .hidden-up { opacity: 0; transform: translateY(50px); transition: all 0.8s ease-out; }
-        .show { opacity: 1; transform: translate(0); }
-
-        /* FLOATING BUBBLES EFFECT */
-        .bubble {
+            font-size: clamp(60px, 15vw, 200px); 
+            font-weight: 900; letter-spacing: 12px; text-transform: uppercase; 
+            margin-bottom: 2vh; 
+            
+            /* Gradient base + bright white sweep spot */
+            background: linear-gradient(120deg, 
+                rgba(255,255,255,0.15) 0%, 
+                rgba(255,255,255,0.15) 40%, 
+                #ffffff 50%, 
+                rgba(255,255,255,0.15) 60%, 
+                rgba(255,255,255,0.15) 100%
+            );
+            background-size: 300% auto; 
+            color: transparent; 
+            -webkit-background-clip: text;
+            background-position: 100% center; /* Glare starts hidden right */
+            
+            /* JS will animate this from 0 to 1 */
             opacity: 0;
-            transform: scale(0.5) translateY(50px);
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.1);
+            margin-left: 12px; /* Visual balance for letter spacing */
         }
-        .bubble.pop { opacity: 1; transform: scale(1) translateY(0); }
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+        
+        .scroll-indicator { position: absolute; bottom: 8vh; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 20px; opacity: 0.4; transition: opacity 0.4s; }
+        .scroll-indicator:hover { opacity: 1; }
+        .scroll-indicator span { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 5px; font-weight: 600; color: var(--text-pure); }
+        .scroll-line { width: 1px; height: 100px; background: rgba(255,255,255,0.1); position: relative; overflow: hidden; }
+        .scroll-line::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 30%; background: var(--text-pure); animation: scrollDrop 2s cubic-bezier(0.77, 0, 0.175, 1) infinite; }
+        @keyframes scrollDrop { 0% { transform: translateY(-100%); } 100% { transform: translateY(400%); } }
+
+        /* ==========================================================================
+           7. 3D PHOENIX MASTER MODEL
+           ========================================================================== */
+        .model-container { position: fixed; top: 10vh; left: 0; width: 700px; height: 700px; z-index: 50; pointer-events: none; perspective: 2500px; opacity: 0; transform: scale(0.8) translateY(100px); }
+        .model-floater { width: 100%; height: 100%; animation: organicFloat 10s ease-in-out infinite; }
+        @keyframes organicFloat { 0%, 100% { transform: translateY(0) rotateX(0deg) rotateY(0deg); } 50% { transform: translateY(-30px) rotateX(5deg) rotateY(3deg); } }
+        model-viewer { width: 100%; height: 100%; --poster-color: transparent; filter: drop-shadow(0 40px 60px rgba(0,0,0,0.8)); }
+
+        /* ==========================================================================
+           8. INFINITE WORKFLOW MARQUEE
+           ========================================================================== */
+        .marquee-section { padding: 10vh 0; background: #000; border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); position: relative; z-index: 10; overflow: hidden; display: flex; flex-direction: column; gap: 20px; }
+        .marquee-track { display: flex; width: max-content; }
+        .marquee-item { display: flex; align-items: center; padding: 0 2vw; }
+        .marquee-item h3 { font-size: clamp(40px, 5vw, 80px); font-weight: 900; text-transform: uppercase; letter-spacing: -2px; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.15); white-space: nowrap; transition: color 0.3s, -webkit-text-stroke 0.3s; }
+        .marquee-item h3:hover { color: var(--text-pure); -webkit-text-stroke: 1px var(--text-pure); }
+        .marquee-item .separator { color: var(--accent-primary); font-size: 30px; margin: 0 40px; font-family: 'JetBrains Mono', monospace; }
+
+        /* ==========================================================================
+           9. 3D SABER GLASS PORTFOLIO LAYOUT
+           ========================================================================== */
+        .portfolio-sections { padding: 15vh 10vw 25vh; display: flex; flex-direction: column; gap: 35vh; position: relative; }
+        .spine-line { position: absolute; top: 0; left: 50%; width: 1px; height: 100%; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.05), transparent); z-index: -1; transform: translateX(-50%); }
+
+        .skew-elem { width: 100%; display: flex; align-items: center; perspective: 2000px; transform-origin: center center; }
+        .section-block { width: 100%; display: flex; }
+        .section-block.right { justify-content: flex-end; }
+        .section-block.left { justify-content: flex-start; }
+
+        .glass-card {
+            width: 48%; padding: 4vw; border-radius: 30px; position: relative; z-index: 10;
+            background: rgba(255, 255, 255, 0.01); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.04); box-shadow: 0 50px 100px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
+            transform-style: preserve-3d; transition: transform 0.1s ease-out; overflow: hidden; 
         }
-        .floating { animation: float 4s ease-in-out infinite; }
-        .delay-1 { transition-delay: 0.1s; animation-delay: 0s; }
-        .delay-2 { transition-delay: 0.3s; animation-delay: 1s; }
-        .delay-3 { transition-delay: 0.5s; animation-delay: 2s; }
+        
+        .glass-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 30px; background: radial-gradient(800px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(255,255,255,0.06), transparent 40%); z-index: -1; transition: opacity 0.6s; opacity: 0; pointer-events: none; }
+        .glass-card:hover::before { opacity: 1; }
+
+        /* ---------------------------------------------------------
+           NEW: SOFT REALISTIC FULL-CONTAINER GLASS GLARE
+           --------------------------------------------------------- */
+        .cc-light-sweep { 
+            position: absolute; top: -50%; left: -100%; width: 80%; height: 200%; 
+            /* Very soft, multi-band gradient imitating curved glass reflection */
+            background: linear-gradient(to right, 
+                rgba(255,255,255,0) 0%, 
+                rgba(255,255,255,0.01) 15%, 
+                rgba(255,255,255,0.03) 25%, 
+                rgba(255,255,255,0) 30%, 
+                rgba(255,255,255,0.15) 45%, /* Core soft white glare */
+                rgba(255,255,255,0.0) 50%, 
+                rgba(255,255,255,0.02) 65%, 
+                rgba(255,255,255,0) 100%
+            );
+            transform: skewX(-35deg); 
+            z-index: 100; /* Physically overlays the text and video */
+            pointer-events: none; 
+            mix-blend-mode: screen; /* Lightens the underlying pixels beautifully */
+            filter: blur(8px); /* Heavily softens the lines into a realistic shine */
+        }
+        /* No hover animations. This is purely driven by GSAP ScrollTrigger below! */
+
+        .saber-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; border-radius: 30px; }
+        .saber-path { fill: none; stroke: var(--accent-primary); stroke-width: 2px; stroke-dasharray: 100; stroke-dashoffset: 100; filter: drop-shadow(0 0 10px var(--accent-primary)) drop-shadow(0 0 30px var(--accent-glow)); vector-effect: non-scaling-stroke; rx: 30px; transition: stroke-dashoffset 3s var(--ease-fluid); }
+        .glass-card.saber-active .saber-path { stroke-dashoffset: 0; }
+
+        .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 20px; margin-bottom: 30px; transform: translateZ(40px); }
+        .card-num { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--accent-primary); transition: text-shadow 0.3s; }
+        .glass-card.saber-active .card-num { text-shadow: 0 0 15px rgba(144,224,175,0.6); } 
+        .card-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; }
+
+        .card-title { font-size: clamp(30px, 3vw, 48px); font-weight: 900; letter-spacing: -1px; margin-bottom: 20px; line-height: 1.1; transform: translateZ(60px); }
+        .card-desc { font-size: 15px; color: var(--text-dim); line-height: 1.8; margin-bottom: 40px; font-weight: 400; transform: translateZ(50px); }
+
+        .video-box { border-radius: 16px; overflow: hidden; position: relative; box-shadow: 0 30px 60px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.08); transform: translateZ(80px); transition: box-shadow 0.6s var(--ease-apple), border-color 0.6s, transform 0.6s var(--ease-apple); }
+        .glass-card:hover .video-box { box-shadow: 0 60px 100px rgba(0,0,0,0.9); border-color: rgba(255,255,255,0.2); transform: translateZ(90px); }
+        .video-box video { width: 100%; display: block; filter: brightness(0.8) contrast(1.15) saturate(0.9); transition: filter 0.6s; }
+        .glass-card:hover .video-box video { filter: brightness(1.05) contrast(1.05) saturate(1.1); }
+
+        /* ==========================================================================
+           10. THE LAB & FOOTER
+           ========================================================================== */
+        .pipeline { padding: 15vh 10vw 25vh; position: relative; z-index: 10; border-top: 1px solid var(--glass-border); background: radial-gradient(circle at 50% 100%, rgba(144, 224, 175, 0.03) 0%, transparent 70%); }
+        .section-header { text-align: center; margin-bottom: 12vh; position: relative; }
+        .sh-small { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 5px; display: block; margin-bottom: 25px; }
+        .sh-large { font-size: clamp(50px, 7vw, 100px); font-weight: 900; text-transform: uppercase; letter-spacing: -3px; color: var(--text-pure); }
+
+        .arsenal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3vw; }
+        .tech-item { padding: 5vw; background: rgba(255,255,255,0.01); border: 1px solid var(--glass-border); border-radius: 24px; position: relative; overflow: hidden; transition: transform 0.6s var(--ease-apple), border-color 0.6s, box-shadow 0.6s; display: flex; flex-direction: column; justify-content: space-between; }
+        .tech-item::after { content: ''; position: absolute; top: -100%; left: 0; width: 100%; height: 2px; background: var(--accent-primary); box-shadow: 0 0 20px var(--accent-glow); opacity: 0; transition: opacity 0.3s; }
+        .tech-item:hover::after { opacity: 1; animation: laserScan 2s linear infinite; }
+        @keyframes laserScan { 0% { top: -10%; } 100% { top: 110%; } }
+        .tech-item:hover { transform: translateY(-15px) scale(1.02); border-color: rgba(144, 224, 175, 0.2); box-shadow: 0 40px 80px rgba(0,0,0,0.6); background: rgba(255,255,255,0.02); }
+        .tech-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
+        .tech-icon { font-size: 24px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; font-weight: 800; border: 1px solid var(--glass-border); padding: 10px 15px; border-radius: 8px; transition: color 0.4s, border-color 0.4s; }
+        .tech-item:hover .tech-icon { color: var(--accent-primary); border-color: rgba(144,224,175,0.3); }
+        .tech-status { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent-primary); display: flex; align-items: center; gap: 8px; }
+        .status-dot { width: 6px; height: 6px; background: var(--accent-primary); border-radius: 50%; box-shadow: 0 0 8px var(--accent-glow); animation: pulseDot 2s infinite; }
+        @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .tech-item h4 { font-size: clamp(24px, 2vw, 32px); font-weight: 900; margin-bottom: 15px; letter-spacing: -1px; }
+        .tech-item p { font-size: 15px; color: var(--text-dim); line-height: 1.8; margin-bottom: 30px; font-weight: 400; }
+        .tech-spec { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 10px 20px; background: #000; border: 1px solid rgba(255,255,255,0.05); border-radius: 4px; display: inline-block; color: var(--text-bright); letter-spacing: 1px; }
+
+        footer { padding: 15vh 6vw 5vh; border-top: 1px solid var(--glass-border); position: relative; overflow: hidden; background: #000; display: flex; flex-direction: column; justify-content: space-between; min-height: 80vh; }
+        .footer-bg-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22vw; font-weight: 900; line-height: 0.8; letter-spacing: -0.06em; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.02); text-align: center; user-select: none; z-index: 0; transition: -webkit-text-stroke 0.5s; white-space: nowrap; }
+        footer:hover .footer-bg-text { -webkit-text-stroke: 1px rgba(144, 224, 175, 0.1); }
+        .footer-content { position: relative; z-index: 10; display: flex; flex-direction: column; justify-content: space-between; height: 100%; flex-grow: 1; }
+        .fc-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .fc-cta h2 { font-size: clamp(40px, 4vw, 60px); font-weight: 900; margin-bottom: 20px; letter-spacing: -1px; }
+        .fc-cta p { font-size: 16px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 40px; margin-top: auto; }
+        .fb-left h3 { font-size: 20px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+        .fb-left p { color: var(--text-dim); font-size: 12px; font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; }
+        .socials { display: flex; gap: 40px; }
+        .social-link { color: var(--text-pure); text-decoration: none; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; position: relative; padding-bottom: 8px; overflow: hidden; display: inline-block; }
+        .social-link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--accent-primary); transform: translateX(-101%); transition: transform 0.4s var(--ease-apple); }
+        .social-link:hover::after { transform: translateX(0); }
+
+        @media (max-width: 1024px) {
+            .section-block { justify-content: center !important; }
+            .glass-card { width: 100%; padding: 6vw; transform: none !important; } 
+            .cc-light-sweep { display: none; }
+            .spine-line, .tech-grid, .scroll-progress-container, .hud { display: none; }
+            .model-container { display: none; } 
+            .cursor-dot, .cursor-ring { display: none; } 
+            * { cursor: auto; }
+            .arsenal-grid { grid-template-columns: 1fr; }
+            #hero-profile-pic { display: none; } 
+        }
     </style>
 </head>
-<body class="selection:bg-[#00d2ff]/30 antialiased">
+<body>
 
-    <div class="fixed top-0 left-0 w-full h-full z-[-1] bg-[#050505]">
-        <video id="bgVideo" loop muted playsinline preload="metadata" class="w-full h-full object-cover opacity-30">
-            <source src="bg-video.mp4" type="video/mp4">
-        </video>
-        <div class="absolute inset-0 bg-gradient-to-b from-[#050505]/30 via-[#050505]/70 to-[#050505]/95"></div>
+    <canvas id="ambient-canvas"></canvas>
+    <div class="tech-grid"></div>
+    <div class="gradient-bg"></div>
+    <div class="noise"></div>
+    
+    <div class="hud hud-top-left">SYS.VER: 4.2.1 <br> LAT/LONG: 21.333, 83.616</div>
+    <div class="hud hud-bottom-right">SCROLL.Y <span class="hud-value" id="hud-scroll">0000</span></div>
+    <div class="hud hud-bottom-left">LOCAL.TIME <span class="hud-value" id="hud-time">00:00:00</span></div>
+    
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+
+    <div class="scroll-progress-container">
+        <div class="scroll-progress-fill"></div>
     </div>
 
-    <header class="relative h-screen flex flex-col items-center justify-center text-center">
-        <div class="z-10 px-4 hidden-up observe flex flex-col items-center">
-            
-            <img src="profile.jpg" alt="Profile" class="w-28 h-28 md:w-36 md:h-36 rounded-full object-cover mb-6 border-2 border-[#00d2ff]/30 shadow-[0_0_30px_rgba(0,210,255,0.2)]">
+    <div class="preloader">
+        <div class="terminal-header">SANGRAM_SYS INITIALIZING...</div>
+        <div class="terminal-body" id="term-body"></div>
+        <div class="loader-math">000</div>
+        <div class="loader-bar-bg"><div class="loader-bar-fill"></div></div>
+    </div>
 
-            <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-4 drop-shadow-2xl">
-                SNGRM.
-            </h1>
-            <p class="text-xl md:text-3xl font-light text-gray-300 max-w-3xl mx-auto drop-shadow-md">
-                Chemistry Graduate. <span class="gojo-blue font-bold">Visual Storyteller.</span>
-            </p>
+    <img src="photo.jpg" onerror="this.src='profile.jpg'" id="hero-profile-pic" alt="Sangram Profile">
+
+    <div class="model-container">
+        <div class="model-floater">
+            <model-viewer id="phoenix-model" src="phoenix_bird.glb" autoplay camera-controls="false" disable-zoom exposure="1.8" shadow-intensity="2.5" shadow-softness="0.5"></model-viewer>
         </div>
-        <div class="absolute bottom-10 z-10 animate-bounce text-[#00d2ff] opacity-70 hidden-up observe delay-2">↓ Scroll to Begin</div>
+    </div>
+
+    <nav>
+        <div class="nav-logo magnetic-wrap">
+            <div class="logo-placeholder"></div>
+            <span class="magnetic-elem"></span> 
+        </div>
+        <div class="nav-links">
+            <div class="magnetic-wrap"><a href="#work" class="magnetic-elem">Output</a></div>
+            <div class="magnetic-wrap"><a href="#arsenal" class="magnetic-elem">The Lab</a></div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-spacer"></div>
+        <h2 class="hero-name">SNGRM</h2>
+        
+        <div class="scroll-indicator">
+            <span>Scroll</span>
+            <div class="scroll-line"></div>
+        </div>
     </header>
 
-    <section class="max-w-7xl mx-auto px-6 py-32 flex flex-col md:flex-row items-center justify-between gap-10">
-        <div class="w-full md:w-1/4 hidden-left observe">
-            <video autoplay loop muted playsinline class="rounded-2xl shadow-[0_0_30px_rgba(0,210,255,0.15)] w-full object-cover aspect-square md:aspect-auto">
-                <source src="Slide-1L.mp4" type="video/mp4">
-            </video>
+    <section class="marquee-section">
+        <div class="marquee-track track-1">
+            <div class="marquee-item">
+                <h3>VFX Compositing</h3><span class="separator">//</span>
+                <h3>Kinetic Typography</h3><span class="separator">//</span>
+                <h3>Cinematic Color</h3><span class="separator">//</span>
+                <h3>Trend Editing</h3><span class="separator">//</span>
+            </div>
+            <div class="marquee-item">
+                <h3>VFX Compositing</h3><span class="separator">//</span>
+                <h3>Kinetic Typography</h3><span class="separator">//</span>
+                <h3>Cinematic Color</h3><span class="separator">//</span>
+                <h3>Trend Editing</h3><span class="separator">//</span>
+            </div>
         </div>
+        <div class="marquee-track track-2 reverse">
+            <div class="marquee-item">
+                <h3>After Effects</h3><span class="separator">//</span>
+                <h3>Node Video</h3><span class="separator">//</span>
+                <h3>CapCut Pro</h3><span class="separator">//</span>
+                <h3>Sony Optics</h3><span class="separator">//</span>
+            </div>
+            <div class="marquee-item">
+                <h3>After Effects</h3><span class="separator">//</span>
+                <h3>Node Video</h3><span class="separator">//</span>
+                <h3>CapCut Pro</h3><span class="separator">//</span>
+                <h3>Sony Optics</h3><span class="separator">//</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="portfolio-sections" id="work" data-bgcolor="#0A1428">
+        <div class="spine-line"></div>
         
-        <div class="w-full md:w-2/4 text-center hidden-up observe z-10">
-            <h2 class="text-sm font-bold tracking-[0.3em] gojo-blue uppercase mb-4">About Me</h2>
-            <p class="text-2xl md:text-4xl font-light leading-relaxed text-gray-200">
-                A dedicated B.Sc. Chemistry graduate <span class="gojo-blue font-bold">(8.0 CGPA)</span> bridging the gap between analytical science and digital storytelling.
-            </p>
-        </div>
-
-        <div class="w-full md:w-1/4 hidden-right observe">
-            <video autoplay loop muted playsinline class="rounded-2xl shadow-[0_0_30px_rgba(0,210,255,0.15)] w-full object-cover aspect-square md:aspect-auto">
-                <source src="Slide-1R.mp4" type="video/mp4">
-            </video>
-        </div>
-    </section>
-    
-
-    <section class="py-20 relative">
-        <div class="max-w-4xl mx-auto px-6 text-center">
-            <h2 class="text-sm font-bold tracking-[0.3em] text-gray-500 uppercase mb-12 hidden-up observe">Technical Arsenal</h2>
-            
-            <div class="flex flex-wrap justify-center gap-6">
-                <div class="bubble delay-1 glass px-8 py-4 rounded-full border border-[#00d2ff]/30 text-[#00d2ff] font-bold text-xl backdrop-blur-md">
-                    <div class="floating">After Effects</div>
-                </div>
-                <div class="bubble delay-2 glass px-8 py-4 rounded-full border border-[#00d2ff]/30 text-[#00d2ff] font-bold text-xl backdrop-blur-md">
-                    <div class="floating">Node Video</div>
-                </div>
-                <div class="bubble delay-3 glass px-8 py-4 rounded-full border border-[#00d2ff]/30 text-[#00d2ff] font-bold text-xl backdrop-blur-md">
-                    <div class="floating">Ryzen Architecture</div>
+        <div class="skew-elem">
+            <div class="section-block right">
+                <div class="glass-card magnetic-trigger tilt-card">
+                    <div class="cc-light-sweep"></div>
+                    <svg class="saber-wrapper" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                        <rect class="saber-path" x="0" y="0" width="100%" height="100%" pathLength="100" />
+                    </svg>
+                    <div class="card-header">
+                        <span class="card-num">// 001. VFX</span>
+                        <span class="card-meta">After Effects</span>
+                    </div>
+                    <h2 class="card-title split-chars-dynamic">VFX Integration</h2>
+                    <p class="card-desc split-lines">Pushing the boundaries of raw footage. Advanced node and layer-based visual effects built to augment physical reality seamlessly.</p>
+                    <div class="video-box"><video autoplay loop muted playsinline><source src="B1Meteor.mp4" type="video/mp4"></video></div>
                 </div>
             </div>
         </div>
-    </section>
 
-    <section class="max-w-6xl mx-auto px-6 py-32">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="glass p-10 rounded-[2rem] md:col-span-2 hidden-left observe hover:border-[#00d2ff]/50 transition duration-500 group">
-                <span class="text-xs font-bold tracking-widest text-[#00d2ff] uppercase">Education</span>
-                <h3 class="text-4xl font-bold mt-4 mb-2 group-hover:text-[#00d2ff] transition">B.Sc. in Chemistry</h3>
-                <p class="text-gray-400 text-lg">Core competencies in <span class="text-white">Electrochemistry</span> and <span class="text-white">Calculus</span>.</p>
-            </div>
-
-            <div class="glass p-10 rounded-[2rem] hidden-right observe hover:border-[#00d2ff]/50 transition duration-500 group">
-                <span class="text-xs font-bold tracking-widest text-gray-400 uppercase">Visuals</span>
-                <h3 class="text-2xl font-bold mt-4 group-hover:text-[#00d2ff] transition">Sony/Zeiss Aesthetic</h3>
-                <p class="text-gray-400 mt-2 text-sm">Cinematic color science & precision photography.</p>
-            </div>
-
-            <div class="glass p-10 rounded-[2rem] hidden-left observe hover:border-[#00d2ff]/50 transition duration-500 group">
-                <span class="text-xs font-bold tracking-widest text-gray-400 uppercase">Editing</span>
-                <h3 class="text-2xl font-bold mt-4 group-hover:text-[#00d2ff] transition">Post-Production</h3>
-                <p class="text-gray-400 mt-2 text-sm">Mastering flow, timing, and VFX composition.</p>
-            </div>
-
-            <div class="glass p-10 rounded-[2rem] md:col-span-2 hidden-right observe hover:border-[#00d2ff]/50 transition duration-500 group">
-                <span class="text-xs font-bold tracking-widest text-[#00d2ff] uppercase">Hardware</span>
-                <h3 class="text-3xl font-bold mt-4 group-hover:text-[#00d2ff] transition">Tech Enthusiast</h3>
-                <p class="text-gray-400 mt-4">Understanding the hardware that powers digital art, from component optimization to system stability.</p>
+        <div class="skew-elem">
+            <div class="section-block left" data-bgcolor="#060C18">
+                <div class="glass-card magnetic-trigger tilt-card">
+                    <div class="cc-light-sweep"></div>
+                    <svg class="saber-wrapper" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                        <rect class="saber-path" x="0" y="0" width="100%" height="100%" pathLength="100" />
+                    </svg>
+                    <div class="card-header">
+                        <span class="card-num">// 002. LENS</span>
+                        <span class="card-meta">Color Grade</span>
+                    </div>
+                    <h2 class="card-title split-chars-dynamic">Cinematic Aesthetics</h2>
+                    <p class="card-desc split-lines">Emulating professional camera setups. Utilizing deep color grading and environmental mapping to craft movie-grade atmospheres.</p>
+                    <div class="video-box"><video autoplay loop muted playsinline><source src="B2Beach.mp4" type="video/mp4"></video></div>
+                </div>
             </div>
         </div>
-    </section>
 
-    <section class="max-w-6xl mx-auto px-6 py-20 hidden-up observe">
-        <h2 class="text-2xl font-bold mb-10 tracking-tight text-center">VISUAL ARCHIVE</h2>
-        
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-            
-            <div onclick="toggleVideo(this)" class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer shadow-[0_0_25px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] transition-all duration-300 transform active:scale-95">
-                <video src="B1Meteor.mp4" loop muted playsinline class="absolute inset-0 w-full h-full object-cover transition duration-700"></video>
-                <div class="overlay-content absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 backdrop-blur-sm bg-black/40">
-                    <i class="fa-solid fa-play text-white text-3xl mb-3 drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"></i>
-                    <span class="font-bold tracking-widest text-sm text-white drop-shadow-lg">VFX</span>
+        <div class="skew-elem">
+            <div class="section-block right" data-bgcolor="#03060C">
+                <div class="glass-card magnetic-trigger tilt-card">
+                    <div class="cc-light-sweep"></div>
+                    <svg class="saber-wrapper" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                        <rect class="saber-path" x="0" y="0" width="100%" height="100%" pathLength="100" />
+                    </svg>
+                    <div class="card-header">
+                        <span class="card-num">// 003. FLOW</span>
+                        <span class="card-meta">Trend Sync</span>
+                    </div>
+                    <h2 class="card-title split-chars-dynamic">Trend Sync & Pacing</h2>
+                    <p class="card-desc split-lines">High-impact editing calculated to hold retention. Driven by hyper-smooth transitions, speed ramping, and heavy audio rhythm synchronization.</p>
+                    <div class="video-box"><video autoplay loop muted playsinline><source src="B3Tiki.mp4" type="video/mp4"></video></div>
                 </div>
             </div>
+        </div>
 
-            <div onclick="toggleVideo(this)" class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer shadow-[0_0_25px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] transition-all duration-300 transform active:scale-95">
-                <video src="B2Beach.mp4" loop muted playsinline class="absolute inset-0 w-full h-full object-cover transition duration-700"></video>
-                <div class="overlay-content absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 backdrop-blur-sm bg-black/40">
-                    <i class="fa-solid fa-play text-white text-3xl mb-3 drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"></i>
-                    <span class="font-bold tracking-widest text-sm text-white drop-shadow-lg">CINEMATIC</span>
+        <div class="skew-elem">
+            <div class="section-block left" data-bgcolor="#000000">
+                <div class="glass-card magnetic-trigger tilt-card">
+                    <div class="cc-light-sweep"></div>
+                    <svg class="saber-wrapper" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                        <rect class="saber-path" x="0" y="0" width="100%" height="100%" pathLength="100" />
+                    </svg>
+                    <div class="card-header">
+                        <span class="card-num">// 004. TYPO</span>
+                        <span class="card-meta">Design Sys</span>
+                    </div>
+                    <h2 class="card-title split-chars-dynamic">Kinetic Typography</h2>
+                    <p class="card-desc split-lines">Transforming static text into a physical element. Engineering fluid motion profiles that communicate style, hierarchy, and information simultaneously.</p>
+                    <div class="video-box"><video autoplay loop muted playsinline><source src="B4Sngrm.mp4" type="video/mp4"></video></div>
                 </div>
             </div>
-
-            <div onclick="toggleVideo(this)" class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer shadow-[0_0_25px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] transition-all duration-300 transform active:scale-95">
-                <video src="B3Tiki.mp4" loop muted playsinline class="absolute inset-0 w-full h-full object-cover transition duration-700"></video>
-                <div class="overlay-content absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 backdrop-blur-sm bg-black/40">
-                    <i class="fa-solid fa-play text-white text-3xl mb-3 drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"></i>
-                    <span class="font-bold tracking-widest text-sm text-white drop-shadow-lg">TREND</span>
-                </div>
-            </div>
-
-            <div onclick="toggleVideo(this)" class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer shadow-[0_0_25px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] transition-all duration-300 transform active:scale-95">
-                <video src="B4Sngrm.mp4" loop muted playsinline class="absolute inset-0 w-full h-full object-cover transition duration-700"></video>
-                <div class="overlay-content absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 backdrop-blur-sm bg-black/40">
-                    <i class="fa-solid fa-play text-white text-3xl mb-3 drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"></i>
-                    <span class="font-bold tracking-widest text-sm text-white drop-shadow-lg">TYPOGRAPHY</span>
-                </div>
-            </div>
-
         </div>
     </section>
 
-    <section class="max-w-4xl mx-auto px-6 py-32 text-center hidden-up observe">
-        <h2 class="text-4xl md:text-6xl font-black mb-8">Ready to create?</h2>
-        
-        <a href="mailto:skgartia152@gmail.com" class="inline-block bg-white text-black px-12 py-4 rounded-full font-bold text-lg hover:bg-[#00d2ff] hover:text-white transition duration-300 transform active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(0,210,255,0.6)] mb-12">
-            Connect With Me
-        </a>
-        
-        <div class="flex justify-center gap-8 mt-4">
-            <a href="https://www.youtube.com/@SangramOfficial" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-[#00d2ff] transition duration-300 transform hover:scale-110 active:scale-90">
-                <i class="fa-brands fa-youtube text-4xl drop-shadow-md"></i>
-            </a>
-            <a href="https://www.instagram.com/sngrm.fx" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-[#00d2ff] transition duration-300 transform hover:scale-110 active:scale-90">
-                <i class="fa-brands fa-instagram text-4xl drop-shadow-md"></i>
-            </a>
-            <a href="https://discord.com/invite/kKM75jmQwu" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-[#00d2ff] transition duration-300 transform hover:scale-110 active:scale-90">
-                <i class="fa-brands fa-discord text-4xl drop-shadow-md"></i>
-            </a>
+    <section class="pipeline" id="arsenal">
+        <div class="section-header">
+            <span class="sh-small">System Specs</span>
+            <h2 class="sh-large split-lines">The Lab</h2>
+        </div>
+        <div class="arsenal-grid">
+            <div class="tech-item magnetic-trigger">
+                <div class="tech-header"><div class="tech-icon">[AE]</div><div class="tech-status"><div class="status-dot"></div> ONLINE</div></div>
+                <h4>Core Compositing</h4>
+                <p>Heavy-duty timeline management, 3D camera mapping, and rendering executed within the industry standard post-production suite.</p>
+                <span class="tech-spec">AFTER EFFECTS CC</span>
+            </div>
+            <div class="tech-item magnetic-trigger">
+                <div class="tech-header"><div class="tech-icon">[MOB]</div><div class="tech-status"><div class="status-dot"></div> ONLINE</div></div>
+                <h4>Node Systems</h4>
+                <p>Rapid deployment editing and node-based compositing designed for high-end social formatting on the fly.</p>
+                <span class="tech-spec">NODE VIDEO / CAPCUT</span>
+            </div>
+            <div class="tech-item magnetic-trigger">
+                <div class="tech-header"><div class="tech-icon">[HW]</div><div class="tech-status"><div class="status-dot"></div> OPTIMIZED</div></div>
+                <h4>Render Farm</h4>
+                <p>Custom-built desktop workstation configured to handle dense RAM previews, heavy cache loads, and multi-layered rendering.</p>
+                <span class="tech-spec">RYZEN 5 5600G / 8GB / B450M</span>
+            </div>
+            <div class="tech-item magnetic-trigger">
+                <div class="tech-header"><div class="tech-icon">[CAM]</div><div class="tech-status"><div class="status-dot"></div> RECORDING</div></div>
+                <h4>Optical Matrix</h4>
+                <p>Shooting deep, flexible color profiles ready for intense post-production grading and AI-enhanced scaling.</p>
+                <span class="tech-spec">SAMSUNG S24 FE</span>
+            </div>
         </div>
     </section>
 
-    <footer class="py-10 text-center text-gray-700 text-sm z-10 relative">
-        &copy; 2026 SNGRM. Crafted with logic and light.
+    <footer>
+        <div class="footer-bg-text">SANGRAM</div>
+        <div class="footer-content">
+            <div class="fc-top">
+                <div class="fc-cta">
+                    <h2>Initiate Contact</h2>
+                    <p>Open for freelance motion design and VFX compositing.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="fb-left">
+                    <h3>Sangram Keshari</h3>
+                    <p>SYSTEM STATUS: RENDER COMPLETE // LOCATION: BARGARH, ODISHA</p>
+                </div>
+                <div class="socials">
+                    <div class="magnetic-wrap"><a href="https://www.youtube.com/@SANGRAMYT" target="_blank" class="social-link magnetic-elem">YouTube</a></div>
+                    <div class="magnetic-wrap"><a href="https://www.instagram.com/iamsngrm" target="_blank" class="social-link magnetic-elem">Instagram</a></div>
+                    <div class="magnetic-wrap"><a href="https://discord.com/invite/kKM75jmQwu" target="_blank" class="social-link magnetic-elem">Discord</a></div>
+                </div>
+            </div>
+        </div>
     </footer>
 
     <script>
-        // --- Video Play/Pause Logic for Visual Archive ---
-        function toggleVideo(element) {
-            const video = element.querySelector('video');
-            const overlay = element.querySelector('.overlay-content');
-            
-            if (video.paused) {
-                video.play();
-                overlay.style.opacity = '0'; 
-                overlay.classList.remove('group-hover:opacity-100');
-            } else {
-                video.pause();
-                overlay.style.opacity = '1';
-                overlay.classList.add('group-hover:opacity-100');
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 1. LENIS SMOOTH SCROLL
+        const lenis = new Lenis({ duration: 1.5, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), direction: 'vertical', smooth: true });
+        let scrollVelocity = 0;
+        lenis.on('scroll', (e) => {
+            ScrollTrigger.update();
+            scrollVelocity = e.velocity;
+            document.getElementById('hud-scroll').innerText = Math.floor(e.scroll).toString().padStart(4, '0');
+            const progress = (e.scroll / (document.body.scrollHeight - window.innerHeight)) * 100;
+            document.querySelector('.scroll-progress-fill').style.height = `${progress}%`;
+        });
+        gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+        gsap.ticker.lagSmoothing(0, 0);
+        lenis.stop(); 
+
+        // 2. HUD CLOCK
+        setInterval(() => {
+            const timeStr = new Date().toLocaleTimeString("en-US", { timeZone: "Asia/Kolkata", hour12: false });
+            document.getElementById('hud-time').innerText = timeStr;
+        }, 1000);
+
+        // 3. TERMINAL BOOT PRELOADER
+        const termBody = document.getElementById('term-body');
+        const termLines = ["Connecting to local server...", "Loading WebGL Renderer... OK", "Fetching 3D Model: phoenix_bird.glb... OK", "Compiling GLSL Shaders... OK", "Allocating Video RAM... OK", "Initializing Main Sequence..."];
+        const counterText = document.querySelector('.loader-math');
+        const fillBar = document.querySelector('.loader-bar-fill');
+        let loadProgress = 0, lineIndex = 0;
+
+        let termInterval = setInterval(() => {
+            if(lineIndex < termLines.length) {
+                let p = document.createElement('p'); p.className = 'terminal-line'; p.innerText = "> " + termLines[lineIndex];
+                termBody.appendChild(p); gsap.to(p, {opacity: 1, duration: 0.2}); lineIndex++;
             }
+        }, 300);
+
+        let loaderInterval = setInterval(() => {
+            loadProgress += Math.floor(Math.random() * 6) + 1; 
+            if(loadProgress >= 100) loadProgress = 100;
+            counterText.innerText = loadProgress.toString().padStart(3, '0');
+            fillBar.style.width = loadProgress + '%';
+            
+            if(loadProgress === 100) {
+                clearInterval(loaderInterval); clearInterval(termInterval); setTimeout(revealSite, 600);
+            }
+        }, 40);
+
+        function revealSite() {
+            gsap.to(".preloader", {
+                yPercent: -100, duration: 1.5, ease: "power4.inOut",
+                onComplete: () => {
+                    document.querySelector('.preloader').style.display = 'none';
+                    lenis.start(); 
+                    gsap.to('.model-container', { opacity: 1, scale: 1, y: 0, duration: 2.5, ease: "power3.out" });
+                }
+            });
+            
+            // Explicitly force Profile Pic opacity
+            gsap.to('#hero-profile-pic', { opacity: 1, duration: 1.5, ease: "power2.out", delay: 0.5 });
+            
+            // Animate SNGRM text as a whole block to keep background-clip text intact
+            gsap.fromTo('.hero-name', 
+                { opacity: 0, scale: 0.95, filter: "blur(10px)" },
+                { opacity: 1, scale: 1, filter: "blur(0px)", duration: 2, ease: "power3.out", delay: 0.5 }
+            );
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            
-            // --- SMOOTH Background Video Logic ---
-            const bgVideo = document.getElementById('bgVideo');
-            let isScrolling;
-
-            window.addEventListener('scroll', () => {
-                // Clear the timeout while scrolling is actively happening
-                window.clearTimeout(isScrolling);
-
-                // Play the video smoothly if it's currently paused
-                if (bgVideo && bgVideo.paused) {
-                    bgVideo.play().catch(e => console.log("Playback blocked:", e));
-                }
-
-                // Pause the video 150ms after the user stops scrolling
-                isScrolling = setTimeout(() => {
-                    if (bgVideo && !bgVideo.paused) {
-                        bgVideo.pause();
-                    }
-                }, 150);
-            });
-
-            // --- Scroll Reveal Animations ---
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('show');
-                    }
-                });
-            }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
-
-            const hiddenElements = document.querySelectorAll('.observe');
-            hiddenElements.forEach((el) => observer.observe(el));
-
-            // --- Floating Bubbles Pop Animation ---
-            const bubbleObserver = new IntersectionObserver((entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('pop');
-                    }
-                });
-            }, { threshold: 0.5 });
-
-            const bubbles = document.querySelectorAll('.bubble');
-            bubbles.forEach((el) => bubbleObserver.observe(el));
+        // 4. FIXED PROFILE PIC PARALLAX & HERO SCROLL LIGHT SWEEP
+        gsap.set("#hero-profile-pic", { top: "35vh", left: "50vw", xPercent: -50, yPercent: -50, width: "160px", height: "160px" });
+        
+        gsap.to("#hero-profile-pic", {
+            scrollTrigger: { trigger: "body", start: "top top", end: "300px top", scrub: 1 },
+            top: "40px", left: "6vw", xPercent: 0, yPercent: 0, width: "50px", height: "50px",
+            ease: "power2.inOut"
         });
+
+        // Wipes the text glare smoothly as you scroll
+        gsap.to(".hero-name", {
+            scrollTrigger: { trigger: "body", start: "top top", end: "500px top", scrub: 1 },
+            backgroundPosition: "-50% center", ease: "none"
+        });
+
+        // 5. CONSTELLATION FLUID CANVAS ENGINE
+        const canvas = document.getElementById('ambient-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let particlesArray = []; let mouse = { x: null, y: null, radius: 200 };
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+        class Particle {
+            constructor() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.size = Math.random() * 2 + 1; this.speedX = Math.random() * 0.5 - 0.25; this.speedY = Math.random() * 0.5 - 0.25; }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1; if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                if(mouse.x) { let dx = mouse.x - this.x; let dy = mouse.y - this.y; let distance = Math.sqrt(dx * dx + dy * dy); if(distance < mouse.radius) { this.x -= dx * 0.01; this.y -= dy * 0.01; } }
+            }
+            draw() { ctx.fillStyle = 'rgba(144, 224, 175, 0.5)'; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+        }
+        function initParticles() { for (let i = 0; i < 120; i++) { particlesArray.push(new Particle()); } }
+        function connectParticles() {
+            let opacityValue = 1;
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                    if (distance < (canvas.width / 10) * (canvas.height / 10)) {
+                        opacityValue = 1 - (distance / 20000); ctx.strokeStyle = `rgba(144, 224, 175, ${opacityValue * 0.2})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(particlesArray[a].x, particlesArray[a].y); ctx.lineTo(particlesArray[b].x, particlesArray[b].y); ctx.stroke();
+                    }
+                }
+            }
+        }
+        function animateCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); particlesArray[i].draw(); } connectParticles(); requestAnimationFrame(animateCanvas); }
+        initParticles(); animateCanvas();
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+        // 6. APPLE TV 3D TILT ENGINE
+        document.querySelectorAll('.tilt-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`); card.style.setProperty('--mouse-y', `${y}px`);
+                const xPct = (x / rect.width - 0.5) * 2; const yPct = (y / rect.height - 0.5) * 2; 
+                gsap.to(card, { rotationX: -yPct * 8, rotationY: xPct * 8, ease: "power2.out", duration: 0.5 });
+            });
+            card.addEventListener('mouseleave', () => { gsap.to(card, { rotationX: 0, rotationY: 0, ease: "elastic.out(1, 0.4)", duration: 1.5 }); });
+        });
+
+        // 7. MAGNETIC CURSOR & UI LINKS
+        let xToDot = gsap.quickTo(".cursor-dot", "x", {duration: 0.1, ease: "power3"});
+        let yToDot = gsap.quickTo(".cursor-dot", "y", {duration: 0.1, ease: "power3"});
+        let xToRing = gsap.quickTo(".cursor-ring", "x", {duration: 0.4, ease: "power3"});
+        let yToRing = gsap.quickTo(".cursor-ring", "y", {duration: 0.4, ease: "power3"});
+        window.addEventListener("mousemove", (e) => { xToDot(e.clientX); yToDot(e.clientY); xToRing(e.clientX); yToRing(e.clientY); });
+        
+        document.querySelectorAll('a, .magnetic-trigger').forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+        });
+        document.querySelectorAll('.magnetic-wrap').forEach(wrap => {
+            const elem = wrap.querySelector('.magnetic-elem');
+            wrap.addEventListener('mousemove', (e) => {
+                const rect = wrap.getBoundingClientRect();
+                const dx = (e.clientX - (rect.left + rect.width / 2)) * 0.4; const dy = (e.clientY - (rect.top + rect.height / 2)) * 0.4;
+                gsap.to(elem, { x: dx, y: dy, duration: 0.4, ease: "power3.out" });
+            });
+            wrap.addEventListener('mouseleave', () => { gsap.to(elem, { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.4)" }); });
+        });
+
+        // 8. CHARACTER SPLICING ENGINE FOR PORTFOLIO CARDS
+        document.querySelectorAll('.split-chars-dynamic').forEach(el => {
+            let text = el.innerText; el.innerHTML = '';
+            for(let i=0; i<text.length; i++){
+                let char = text[i] === ' ' ? '&nbsp;' : text[i];
+                let wrapper = document.createElement('span'); wrapper.style.overflow = 'hidden'; wrapper.style.display = 'inline-block';
+                let inner = document.createElement('span'); inner.innerHTML = char; 
+                inner.style.transform = 'translateY(110%)'; inner.style.display = 'inline-block'; inner.classList.add('gsap-char');
+                wrapper.appendChild(inner); el.appendChild(wrapper);
+            }
+        });
+
+        document.querySelectorAll('.split-lines').forEach(el => {
+            let text = el.innerText; el.innerHTML = '';
+            let wrapper = document.createElement('div'); wrapper.style.overflow = 'hidden'; wrapper.style.display = 'inline-block';
+            let inner = document.createElement('div'); inner.innerText = text; inner.style.transform = 'translateY(110%)'; inner.classList.add('gsap-line');
+            wrapper.appendChild(inner); el.appendChild(wrapper);
+        });
+
+        // 9. ADVANCED SCROLLTRIGGERS
+        gsap.to(".track-1", { xPercent: -50, ease: "none", scrollTrigger: { trigger: ".marquee-section", start: "top bottom", end: "bottom top", scrub: 1 } });
+        gsap.to(".track-2", { xPercent: 50, ease: "none", scrollTrigger: { trigger: ".marquee-section", start: "top bottom", end: "bottom top", scrub: 1 } });
+
+        const skewElems = document.querySelectorAll('.skew-elem');
+        gsap.ticker.add(() => {
+            const skewAmount = scrollVelocity * 0.15; 
+            skewElems.forEach(elem => { gsap.to(elem, { rotationX: skewAmount, duration: 0.2, ease: "power2.out", overwrite: true }); });
+        });
+
+        // Card Scroll Animations & Realistic Glare sweeps
+        document.querySelectorAll('.section-block').forEach((sec) => {
+            let bgColor = sec.getAttribute('data-bgcolor');
+            if(bgColor) {
+                ScrollTrigger.create({ trigger: sec, start: "top 50%", end: "bottom 50%", onEnter: () => gsap.to("body", { backgroundColor: bgColor, duration: 1.5 }), onEnterBack: () => gsap.to("body", { backgroundColor: bgColor, duration: 1.5 }) });
+            }
+            
+            // Slow, cinematic letter reveal
+            gsap.to(sec.querySelectorAll('.gsap-char'), { scrollTrigger: { trigger: sec, start: "top 75%" }, y: '0%', duration: 1.5, stagger: 0.04, ease: "power4.out" });
+            gsap.to(sec.querySelectorAll('.gsap-line'), { scrollTrigger: { trigger: sec, start: "top 75%" }, y: '0%', duration: 1.5, stagger: 0.1, ease: "power4.out", delay: 0.2 });
+            
+            ScrollTrigger.create({ trigger: sec, start: "top 60%", onEnter: () => { sec.querySelector('.glass-card').classList.add('saber-active'); } });
+
+            // SCROLL-SYNCED REALISTIC GLARE OVER THE CARDS
+            const sweepElement = sec.querySelector('.cc-light-sweep');
+            if (sweepElement) {
+                gsap.to(sweepElement, {
+                    scrollTrigger: {
+                        trigger: sec,
+                        start: "top bottom", 
+                        end: "bottom top",    
+                        scrub: 1              
+                    },
+                    left: "200%", // Wipes perfectly across the card as it passes the screen
+                    ease: "none"
+                });
+            }
+        });
+
+        gsap.to(document.querySelectorAll('.sh-large .gsap-line'), { scrollTrigger: { trigger: '#arsenal', start: "top 80%" }, y: '0%', duration: 1, ease: "power4.out" });
+
+        // 10. THE MASTER 3D FLIGHT PATH
+        const modelEl = document.getElementById('phoenix-model');
+        const rot = { pitch: 0, yaw: 0, roll: 0 }; 
+        const updateModel3D = () => { if(modelEl.setAttribute) modelEl.setAttribute('orientation', `${rot.pitch}deg ${rot.yaw}deg ${rot.roll}deg`); };
+
+        let flightPath = gsap.timeline({ scrollTrigger: { trigger: "#work", start: "top 90%", endTrigger: "#arsenal", end: "top 40%", scrub: 2.5 } });
+        flightPath.to(".model-container", { x: "45vw", y: "15vh", scale: 1.2, ease: "sine.inOut" }, "f1")
+          .to(rot, { pitch: 15, yaw: 25, roll: -20, onUpdate: updateModel3D, ease: "sine.inOut" }, "f1")
+        .to(".model-container", { x: "10vw", y: "40vh", scale: 0.9, ease: "sine.inOut" }, "f2")
+        .to(rot, { pitch: -5, yaw: -160, roll: 20, onUpdate: updateModel3D, ease: "sine.inOut" }, "f2")
+        .to(".model-container", { x: "45vw", y: "65vh", scale: 1.3, ease: "sine.inOut" }, "f3")
+        .to(rot, { pitch: 12, yaw: 20, roll: -15, onUpdate: updateModel3D, ease: "sine.inOut" }, "f3")
+        .to(".model-container", { x: "10vw", y: "90vh", scale: 1, ease: "sine.inOut" }, "f4")
+        .to(rot, { pitch: 0, yaw: -180, roll: 0, onUpdate: updateModel3D, ease: "sine.inOut" }, "f4")
+        .to(".model-container", { x: "30vw", y: "135vh", scale: 1.6, ease: "power1.inOut" }, "f5")
+        .to(rot, { pitch: 35, yaw: -20, roll: -15, onUpdate: updateModel3D, ease: "power1.inOut" }, "f5");
+
     </script>
 </body>
 </html>
+
