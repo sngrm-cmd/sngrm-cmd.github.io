@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sangram | Elite Visual Engineering</title>
+    <title>SNGRM | Elite Visual Engineering & Chemistry</title>
     
+    <script src="https://cdn.tailwindcss.com"></script>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         /* ==========================================================================
@@ -17,12 +19,12 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800;900&family=JetBrains+Mono:wght@300;400;700;800&display=swap');
 
         :root {
-            --bg-deep: #010204;
-            --bg-mid: #050A14;
-            --bg-highlight: #0A1428;
+            --bg-deep: #050505;
+            --bg-mid: #0a0e14;
+            --bg-highlight: #0f1624;
             
-            --accent-primary: #90E0AF;
-            --accent-glow: rgba(144, 224, 175, 0.6);
+            --accent-primary: #00d2ff;
+            --accent-glow: rgba(0, 210, 255, 0.6);
             --accent-secondary: #4A88D9;
             
             --text-pure: #FFFFFF;
@@ -51,19 +53,20 @@
         }
 
         .mono { font-family: 'JetBrains Mono', monospace; }
-        h1, h2, h3, h4, .split-lines, .split-chars-dynamic { font-weight: 800; letter-spacing: -0.02em; }
+        h1, h2, h3, h4, .split-chars-dynamic { font-weight: 800; letter-spacing: -0.02em; }
         ::selection { background: var(--accent-primary); color: #000; }
 
         /* ==========================================================================
            2. GLOBAL ENVIRONMENT EFFECTS (Canvas, Noise, Grid, HUD)
            ========================================================================== */
-        #ambient-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; pointer-events: none; opacity: 0.8; }
+        /* Changed 100vw to 100% to fix right-side gap */
+        #ambient-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: -2; pointer-events: none; opacity: 0.5; }
         
-        .gradient-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 50% 0%, var(--bg-mid) 0%, transparent 80%); z-index: -1; pointer-events: none; mix-blend-mode: screen; transition: background 1.5s var(--ease-apple); }
+        .gradient-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: radial-gradient(circle at 50% 0%, var(--bg-mid) 0%, transparent 80%); z-index: -1; pointer-events: none; mix-blend-mode: screen; transition: background 1.5s var(--ease-apple); }
         
-        .tech-grid { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 60px 60px; z-index: -1; pointer-events: none; opacity: 0.7; mask-image: radial-gradient(circle at center, black 30%, transparent 100%); -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 100%); }
+        .tech-grid { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 60px 60px; z-index: -1; pointer-events: none; opacity: 0.7; mask-image: radial-gradient(circle at center, black 30%, transparent 100%); -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 100%); }
         
-        .noise { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9998; opacity: 0.05; mix-blend-mode: overlay; background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); }
+        .noise { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; pointer-events: none; z-index: 9998; opacity: 0.05; mix-blend-mode: overlay; background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); }
 
         .hud { position: fixed; z-index: 8000; pointer-events: none; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; }
         .hud-top-left { top: 30px; left: 30px; }
@@ -78,17 +81,18 @@
            3. MAGNETIC CURSOR SYSTEM
            ========================================================================= */
         .cursor-dot { width: 5px; height: 5px; background: var(--accent-primary); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10000; transform: translate(-50%, -50%); transition: opacity 0.3s; }
-        .cursor-ring { width: 35px; height: 35px; border: 1px solid rgba(144, 224, 175, 0.5); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.3s var(--ease-apple), height 0.3s var(--ease-apple), background 0.3s var(--ease-apple), border-color 0.3s; }
-        .cursor-hover .cursor-ring { width: 70px; height: 70px; background: rgba(144, 224, 175, 0.05); border-color: rgba(144, 224, 175, 0.8); backdrop-filter: blur(4px); }
+        .cursor-ring { width: 35px; height: 35px; border: 1px solid rgba(0, 210, 255, 0.5); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.3s var(--ease-apple), height 0.3s var(--ease-apple), background 0.3s var(--ease-apple), border-color 0.3s; }
+        .cursor-hover .cursor-ring { width: 70px; height: 70px; background: rgba(0, 210, 255, 0.05); border-color: rgba(0, 210, 255, 0.8); backdrop-filter: blur(4px); }
         .cursor-hover .cursor-dot { transform: translate(-50%, -50%) scale(0); }
 
         /* ==========================================================================
            4. TERMINAL BOOT PRELOADER 
            ========================================================================== */
-        .preloader { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 100000; display: flex; flex-direction: column; justify-content: space-between; padding: 4vw; }
+        /* Changed 100vw to 100% */
+        .preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #000; z-index: 100000; display: flex; flex-direction: column; justify-content: space-between; padding: 4vw; }
         .terminal-header { font-family: 'JetBrains Mono', monospace; color: var(--text-dim); font-size: 12px; }
         .terminal-body { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
-        .terminal-line { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--accent-primary); margin-bottom: 8px; opacity: 0; text-shadow: 0 0 5px rgba(144,224,175,0.4); }
+        .terminal-line { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--accent-primary); margin-bottom: 8px; opacity: 0; text-shadow: 0 0 5px rgba(0,210,255,0.4); }
         .loader-math { font-family: 'Inter', sans-serif; font-size: 15vw; font-weight: 900; letter-spacing: -0.05em; line-height: 1; color: var(--text-pure); align-self: flex-end; }
         .loader-bar-bg { width: 100%; height: 1px; background: rgba(255,255,255,0.1); margin-top: 20px; position: relative; }
         .loader-bar-fill { position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: var(--text-pure); transition: width 0.1s; }
@@ -96,67 +100,40 @@
         /* ==========================================================================
            5. NAVIGATION UI & FIXED PROFILE PIC
            ========================================================================== */
-        /* GUARANTEED VISIBLE FIXED PHOTO. 
-           GSAP will control opacity and position dynamically. 
-        */
         #hero-profile-pic { 
-            position: fixed; 
-            z-index: 9500; 
-            object-fit: cover; 
-            border-radius: 50%; 
-            border: 2px solid rgba(255,255,255,0.15); 
-            pointer-events: none; 
-            box-shadow: 0 20px 60px rgba(0,0,0,0.9); 
-            /* Started perfectly centered */
-            top: 35vh; left: 50vw; 
-            transform: translate(-50%, -50%);
-            width: 160px; height: 160px;
-            /* Explicitly hidden initially so the preloader looks clean */
-            opacity: 0; 
+            position: fixed; z-index: 9500; object-fit: cover; border-radius: 50%; 
+            border: 2px solid rgba(255,255,255,0.15); pointer-events: none; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 30px rgba(0,210,255,0.2); 
+            top: 28vh; left: 50vw; transform: translate(-50%, -50%);
+            width: 160px; height: 160px; opacity: 0; 
         }
 
         nav { position: fixed; top: 0; left: 0; width: 100%; padding: 40px 6vw; display: flex; justify-content: space-between; align-items: center; z-index: 5000; mix-blend-mode: difference; }
         .nav-logo { display: flex; align-items: center; gap: 20px; }
-        /* Empty target for the photo to dock into */
         .logo-placeholder { width: 50px; height: 50px; border-radius: 50%; } 
         
         .nav-links { display: flex; gap: 20px; }
         .magnetic-wrap { padding: 10px 20px; display: inline-block; position: relative; }
         .magnetic-wrap a { color: var(--text-pure); text-decoration: none; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5; transition: opacity 0.3s, color 0.3s; display: inline-block; }
-        .magnetic-wrap:hover a { opacity: 1; color: var(--accent-primary); text-shadow: 0 0 15px rgba(144,224,175,0.4); }
+        .magnetic-wrap:hover a { opacity: 1; color: var(--accent-primary); text-shadow: 0 0 15px rgba(0,210,255,0.4); }
 
         /* ==========================================================================
-           6. HERO SECTION (ONLY NAME & SWEEP)
+           6. HERO SECTION
            ========================================================================== */
-        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; padding: 0 6vw; }
-        
-        /* This spaces the text down so the profile picture fits exactly above it */
-        .hero-spacer { height: 180px; } 
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; padding: 0 6vw; text-align: center; }
+        .hero-spacer { height: 120px; } 
 
         .hero-name {
-            font-family: 'Inter', sans-serif; 
-            font-size: clamp(60px, 15vw, 200px); 
-            font-weight: 900; letter-spacing: 12px; text-transform: uppercase; 
-            margin-bottom: 2vh; 
-            
-            /* Gradient base + bright white sweep spot */
-            background: linear-gradient(120deg, 
-                rgba(255,255,255,0.15) 0%, 
-                rgba(255,255,255,0.15) 40%, 
-                #ffffff 50%, 
-                rgba(255,255,255,0.15) 60%, 
-                rgba(255,255,255,0.15) 100%
-            );
-            background-size: 300% auto; 
-            color: transparent; 
-            -webkit-background-clip: text;
-            background-position: 100% center; /* Glare starts hidden right */
-            
-            /* JS will animate this from 0 to 1 */
-            opacity: 0;
-            margin-left: 12px; /* Visual balance for letter spacing */
+            font-family: 'Inter', sans-serif; font-size: clamp(60px, 15vw, 200px); 
+            font-weight: 900; letter-spacing: 12px; text-transform: uppercase; margin-bottom: 2vh; 
+            background: linear-gradient(120deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.15) 40%, #ffffff 50%, rgba(255,255,255,0.15) 60%, rgba(255,255,255,0.15) 100%);
+            background-size: 300% auto; color: transparent; -webkit-background-clip: text;
+            background-position: 100% center; opacity: 0; margin-left: 12px; 
         }
         
+        .hero-subtitle { opacity: 0; font-size: clamp(16px, 2vw, 28px); font-weight: 300; letter-spacing: 2px; color: var(--text-dim); }
+        .hero-subtitle span { color: var(--accent-primary); font-weight: 700; }
+
         .scroll-indicator { position: absolute; bottom: 8vh; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 20px; opacity: 0.4; transition: opacity 0.4s; }
         .scroll-indicator:hover { opacity: 1; }
         .scroll-indicator span { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 5px; font-weight: 600; color: var(--text-pure); }
@@ -165,138 +142,42 @@
         @keyframes scrollDrop { 0% { transform: translateY(-100%); } 100% { transform: translateY(400%); } }
 
         /* ==========================================================================
-           7. 3D PHOENIX MASTER MODEL
+           7. GLASS CARDS & EFFECTS
            ========================================================================== */
-        .model-container { position: fixed; top: 10vh; left: 0; width: 700px; height: 700px; z-index: 50; pointer-events: none; perspective: 2500px; opacity: 0; transform: scale(0.8) translateY(100px); }
-        .model-floater { width: 100%; height: 100%; animation: organicFloat 10s ease-in-out infinite; }
-        @keyframes organicFloat { 0%, 100% { transform: translateY(0) rotateX(0deg) rotateY(0deg); } 50% { transform: translateY(-30px) rotateX(5deg) rotateY(3deg); } }
-        model-viewer { width: 100%; height: 100%; --poster-color: transparent; filter: drop-shadow(0 40px 60px rgba(0,0,0,0.8)); }
-
-        /* ==========================================================================
-           8. INFINITE WORKFLOW MARQUEE
-           ========================================================================== */
-        .marquee-section { padding: 10vh 0; background: #000; border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); position: relative; z-index: 10; overflow: hidden; display: flex; flex-direction: column; gap: 20px; }
-        .marquee-track { display: flex; width: max-content; }
-        .marquee-item { display: flex; align-items: center; padding: 0 2vw; }
-        .marquee-item h3 { font-size: clamp(40px, 5vw, 80px); font-weight: 900; text-transform: uppercase; letter-spacing: -2px; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.15); white-space: nowrap; transition: color 0.3s, -webkit-text-stroke 0.3s; }
-        .marquee-item h3:hover { color: var(--text-pure); -webkit-text-stroke: 1px var(--text-pure); }
-        .marquee-item .separator { color: var(--accent-primary); font-size: 30px; margin: 0 40px; font-family: 'JetBrains Mono', monospace; }
-
-        /* ==========================================================================
-           9. 3D SABER GLASS PORTFOLIO LAYOUT
-           ========================================================================== */
-        .portfolio-sections { padding: 15vh 10vw 25vh; display: flex; flex-direction: column; gap: 35vh; position: relative; }
-        .spine-line { position: absolute; top: 0; left: 50%; width: 1px; height: 100%; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.05), transparent); z-index: -1; transform: translateX(-50%); }
-
-        .skew-elem { width: 100%; display: flex; align-items: center; perspective: 2000px; transform-origin: center center; }
-        .section-block { width: 100%; display: flex; }
-        .section-block.right { justify-content: flex-end; }
-        .section-block.left { justify-content: flex-start; }
-
         .glass-card {
-            width: 48%; padding: 4vw; border-radius: 30px; position: relative; z-index: 10;
             background: rgba(255, 255, 255, 0.01); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
             border: 1px solid rgba(255, 255, 255, 0.04); box-shadow: 0 50px 100px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
-            transform-style: preserve-3d; transition: transform 0.1s ease-out; overflow: hidden; 
+            border-radius: 30px; position: relative; overflow: hidden;
         }
-        
-        .glass-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 30px; background: radial-gradient(800px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(255,255,255,0.06), transparent 40%); z-index: -1; transition: opacity 0.6s; opacity: 0; pointer-events: none; }
-        .glass-card:hover::before { opacity: 1; }
-
-        /* ---------------------------------------------------------
-           NEW: SOFT REALISTIC FULL-CONTAINER GLASS GLARE
-           --------------------------------------------------------- */
         .cc-light-sweep { 
             position: absolute; top: -50%; left: -100%; width: 80%; height: 200%; 
-            /* Very soft, multi-band gradient imitating curved glass reflection */
-            background: linear-gradient(to right, 
-                rgba(255,255,255,0) 0%, 
-                rgba(255,255,255,0.01) 15%, 
-                rgba(255,255,255,0.03) 25%, 
-                rgba(255,255,255,0) 30%, 
-                rgba(255,255,255,0.15) 45%, /* Core soft white glare */
-                rgba(255,255,255,0.0) 50%, 
-                rgba(255,255,255,0.02) 65%, 
-                rgba(255,255,255,0) 100%
-            );
-            transform: skewX(-35deg); 
-            z-index: 100; /* Physically overlays the text and video */
-            pointer-events: none; 
-            mix-blend-mode: screen; /* Lightens the underlying pixels beautifully */
-            filter: blur(8px); /* Heavily softens the lines into a realistic shine */
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.01) 15%, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0) 30%, rgba(255,255,255,0.15) 45%, rgba(255,255,255,0.0) 50%, rgba(255,255,255,0.02) 65%, rgba(255,255,255,0) 100%);
+            transform: skewX(-35deg); z-index: 100; pointer-events: none; mix-blend-mode: screen; filter: blur(8px);
         }
-        /* No hover animations. This is purely driven by GSAP ScrollTrigger below! */
-
         .saber-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; border-radius: 30px; }
-        .saber-path { fill: none; stroke: var(--accent-primary); stroke-width: 2px; stroke-dasharray: 100; stroke-dashoffset: 100; filter: drop-shadow(0 0 10px var(--accent-primary)) drop-shadow(0 0 30px var(--accent-glow)); vector-effect: non-scaling-stroke; rx: 30px; transition: stroke-dashoffset 3s var(--ease-fluid); }
+        .saber-path { fill: none; stroke: var(--accent-primary); stroke-width: 2px; stroke-dasharray: 100; stroke-dashoffset: 100; filter: drop-shadow(0 0 10px var(--accent-primary)) drop-shadow(0 0 30px var(--accent-glow)); vector-effect: non-scaling-stroke; rx: 30px; transition: stroke-dashoffset 1.5s var(--ease-fluid); }
         .glass-card.saber-active .saber-path { stroke-dashoffset: 0; }
 
-        .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 20px; margin-bottom: 30px; transform: translateZ(40px); }
-        .card-num { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--accent-primary); transition: text-shadow 0.3s; }
-        .glass-card.saber-active .card-num { text-shadow: 0 0 15px rgba(144,224,175,0.6); } 
-        .card-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; }
-
-        .card-title { font-size: clamp(30px, 3vw, 48px); font-weight: 900; letter-spacing: -1px; margin-bottom: 20px; line-height: 1.1; transform: translateZ(60px); }
-        .card-desc { font-size: 15px; color: var(--text-dim); line-height: 1.8; margin-bottom: 40px; font-weight: 400; transform: translateZ(50px); }
-
+        /* Video Boxes */
         .video-box { border-radius: 16px; overflow: hidden; position: relative; box-shadow: 0 30px 60px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.08); transform: translateZ(80px); transition: box-shadow 0.6s var(--ease-apple), border-color 0.6s, transform 0.6s var(--ease-apple); }
-        .glass-card:hover .video-box { box-shadow: 0 60px 100px rgba(0,0,0,0.9); border-color: rgba(255,255,255,0.2); transform: translateZ(90px); }
         .video-box video { width: 100%; display: block; filter: brightness(0.8) contrast(1.15) saturate(0.9); transition: filter 0.6s; }
+        .glass-card:hover .video-box { box-shadow: 0 60px 100px rgba(0,0,0,0.9); border-color: rgba(255,255,255,0.2); transform: translateZ(90px); }
         .glass-card:hover .video-box video { filter: brightness(1.05) contrast(1.05) saturate(1.1); }
-
-        /* ==========================================================================
-           10. THE LAB & FOOTER
-           ========================================================================== */
-        .pipeline { padding: 15vh 10vw 25vh; position: relative; z-index: 10; border-top: 1px solid var(--glass-border); background: radial-gradient(circle at 50% 100%, rgba(144, 224, 175, 0.03) 0%, transparent 70%); }
-        .section-header { text-align: center; margin-bottom: 12vh; position: relative; }
-        .sh-small { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 5px; display: block; margin-bottom: 25px; }
-        .sh-large { font-size: clamp(50px, 7vw, 100px); font-weight: 900; text-transform: uppercase; letter-spacing: -3px; color: var(--text-pure); }
-
-        .arsenal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3vw; }
-        .tech-item { padding: 5vw; background: rgba(255,255,255,0.01); border: 1px solid var(--glass-border); border-radius: 24px; position: relative; overflow: hidden; transition: transform 0.6s var(--ease-apple), border-color 0.6s, box-shadow 0.6s; display: flex; flex-direction: column; justify-content: space-between; }
-        .tech-item::after { content: ''; position: absolute; top: -100%; left: 0; width: 100%; height: 2px; background: var(--accent-primary); box-shadow: 0 0 20px var(--accent-glow); opacity: 0; transition: opacity 0.3s; }
-        .tech-item:hover::after { opacity: 1; animation: laserScan 2s linear infinite; }
-        @keyframes laserScan { 0% { top: -10%; } 100% { top: 110%; } }
-        .tech-item:hover { transform: translateY(-15px) scale(1.02); border-color: rgba(144, 224, 175, 0.2); box-shadow: 0 40px 80px rgba(0,0,0,0.6); background: rgba(255,255,255,0.02); }
-        .tech-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
-        .tech-icon { font-size: 24px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; font-weight: 800; border: 1px solid var(--glass-border); padding: 10px 15px; border-radius: 8px; transition: color 0.4s, border-color 0.4s; }
-        .tech-item:hover .tech-icon { color: var(--accent-primary); border-color: rgba(144,224,175,0.3); }
-        .tech-status { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent-primary); display: flex; align-items: center; gap: 8px; }
-        .status-dot { width: 6px; height: 6px; background: var(--accent-primary); border-radius: 50%; box-shadow: 0 0 8px var(--accent-glow); animation: pulseDot 2s infinite; }
-        @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        .tech-item h4 { font-size: clamp(24px, 2vw, 32px); font-weight: 900; margin-bottom: 15px; letter-spacing: -1px; }
-        .tech-item p { font-size: 15px; color: var(--text-dim); line-height: 1.8; margin-bottom: 30px; font-weight: 400; }
-        .tech-spec { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 10px 20px; background: #000; border: 1px solid rgba(255,255,255,0.05); border-radius: 4px; display: inline-block; color: var(--text-bright); letter-spacing: 1px; }
-
-        footer { padding: 15vh 6vw 5vh; border-top: 1px solid var(--glass-border); position: relative; overflow: hidden; background: #000; display: flex; flex-direction: column; justify-content: space-between; min-height: 80vh; }
-        .footer-bg-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22vw; font-weight: 900; line-height: 0.8; letter-spacing: -0.06em; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.02); text-align: center; user-select: none; z-index: 0; transition: -webkit-text-stroke 0.5s; white-space: nowrap; }
-        footer:hover .footer-bg-text { -webkit-text-stroke: 1px rgba(144, 224, 175, 0.1); }
-        .footer-content { position: relative; z-index: 10; display: flex; flex-direction: column; justify-content: space-between; height: 100%; flex-grow: 1; }
-        .fc-top { display: flex; justify-content: space-between; align-items: flex-start; }
-        .fc-cta h2 { font-size: clamp(40px, 4vw, 60px); font-weight: 900; margin-bottom: 20px; letter-spacing: -1px; }
-        .fc-cta p { font-size: 16px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
-        .footer-bottom { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 40px; margin-top: auto; }
-        .fb-left h3 { font-size: 20px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
-        .fb-left p { color: var(--text-dim); font-size: 12px; font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; }
-        .socials { display: flex; gap: 40px; }
-        .social-link { color: var(--text-pure); text-decoration: none; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; position: relative; padding-bottom: 8px; overflow: hidden; display: inline-block; }
-        .social-link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--accent-primary); transform: translateX(-101%); transition: transform 0.4s var(--ease-apple); }
-        .social-link:hover::after { transform: translateX(0); }
-
-        @media (max-width: 1024px) {
-            .section-block { justify-content: center !important; }
-            .glass-card { width: 100%; padding: 6vw; transform: none !important; } 
-            .cc-light-sweep { display: none; }
-            .spine-line, .tech-grid, .scroll-progress-container, .hud { display: none; }
-            .model-container { display: none; } 
-            .cursor-dot, .cursor-ring { display: none; } 
-            * { cursor: auto; }
-            .arsenal-grid { grid-template-columns: 1fr; }
-            #hero-profile-pic { display: none; } 
-        }
     </style>
 </head>
-<body>
+<body class="selection:bg-[#00d2ff]/30">
+
+    <div class="fixed z-[-1] pointer-events-none w-full h-full top-0 left-0 overflow-hidden" id="ambient-3d-models">
+        <div class="absolute top-[15vh] right-[5vw] w-[30vw] max-w-[300px] aspect-square opacity-40 model-3d-wrap" data-speed="1.2">
+            <model-viewer src="simple_lab_conical_flask.glb" camera-controls="false" disable-zoom exposure="1.5" shadow-intensity="1" style="width:100%; height:100%;"></model-viewer>
+        </div>
+        <div class="absolute top-[50vh] left-[2vw] w-[40vw] max-w-[400px] aspect-square opacity-30 model-3d-wrap" data-speed="-0.8">
+            <model-viewer src="needle_grass.glb" camera-controls="false" disable-zoom exposure="1.2" shadow-intensity="1" style="width:100%; height:100%;"></model-viewer>
+        </div>
+        <div class="absolute bottom-[10vh] right-[20vw] w-[25vw] max-w-[250px] aspect-square opacity-50 model-3d-wrap" data-speed="1.8">
+            <model-viewer src="ice_block.glb" camera-controls="false" disable-zoom exposure="2" shadow-intensity="1" style="width:100%; height:100%;"></model-viewer>
+        </div>
+    </div>
 
     <canvas id="ambient-canvas"></canvas>
     <div class="tech-grid"></div>
@@ -321,13 +202,7 @@
         <div class="loader-bar-bg"><div class="loader-bar-fill"></div></div>
     </div>
 
-    <img src="photo.jpg" onerror="this.src='profile.jpg'" id="hero-profile-pic" alt="Sangram Profile">
-
-    <div class="model-container">
-        <div class="model-floater">
-            <model-viewer id="phoenix-model" src="phoenix_bird.glb" autoplay camera-controls="false" disable-zoom exposure="1.8" shadow-intensity="2.5" shadow-softness="0.5"></model-viewer>
-        </div>
-    </div>
+    <img src="profile.jpg" onerror="this.src='photo.jpg'" id="hero-profile-pic" alt="Sangram Profile">
 
     <nav>
         <div class="nav-logo magnetic-wrap">
@@ -335,7 +210,8 @@
             <span class="magnetic-elem"></span> 
         </div>
         <div class="nav-links">
-            <div class="magnetic-wrap"><a href="#work" class="magnetic-elem">Output</a></div>
+            <div class="magnetic-wrap"><a href="#about" class="magnetic-elem">Background</a></div>
+            <div class="magnetic-wrap"><a href="#work" class="magnetic-elem">Archive</a></div>
             <div class="magnetic-wrap"><a href="#arsenal" class="magnetic-elem">The Lab</a></div>
         </div>
     </nav>
@@ -343,6 +219,7 @@
     <header class="hero">
         <div class="hero-spacer"></div>
         <h2 class="hero-name">SNGRM</h2>
+        <p class="hero-subtitle">Chemistry Graduate. <span>Visual Storyteller.</span></p>
         
         <div class="scroll-indicator">
             <span>Scroll</span>
@@ -350,164 +227,168 @@
         </div>
     </header>
 
-    <section class="marquee-section">
-        <div class="marquee-track track-1">
-            <div class="marquee-item">
-                <h3>VFX Compositing</h3><span class="separator">//</span>
-                <h3>Kinetic Typography</h3><span class="separator">//</span>
-                <h3>Cinematic Color</h3><span class="separator">//</span>
-                <h3>Trend Editing</h3><span class="separator">//</span>
-            </div>
-            <div class="marquee-item">
-                <h3>VFX Compositing</h3><span class="separator">//</span>
-                <h3>Kinetic Typography</h3><span class="separator">//</span>
-                <h3>Cinematic Color</h3><span class="separator">//</span>
-                <h3>Trend Editing</h3><span class="separator">//</span>
+    <section id="about" class="max-w-7xl mx-auto px-6 py-24 flex flex-col lg:flex-row items-center justify-between gap-12 relative z-10" data-bgcolor="#0a0a0a">
+        <div class="w-full lg:w-1/3">
+            <div class="glass-card slide-left magnetic-trigger tilt-card p-4">
+                <div class="video-box"><video autoplay loop muted playsinline><source src="Slide-1L.mp4" type="video/mp4"></video></div>
             </div>
         </div>
-        <div class="marquee-track track-2 reverse">
-            <div class="marquee-item">
-                <h3>After Effects</h3><span class="separator">//</span>
-                <h3>Node Video</h3><span class="separator">//</span>
-                <h3>CapCut Pro</h3><span class="separator">//</span>
-                <h3>Sony Optics</h3><span class="separator">//</span>
-            </div>
-            <div class="marquee-item">
-                <h3>After Effects</h3><span class="separator">//</span>
-                <h3>Node Video</h3><span class="separator">//</span>
-                <h3>CapCut Pro</h3><span class="separator">//</span>
-                <h3>Sony Optics</h3><span class="separator">//</span>
-            </div>
-        </div>
-    </section>
-
-    <section class="portfolio-sections" id="work" data-bgcolor="#0A1428">
-        <div class="spine-line"></div>
         
-        <div class="skew-elem">
-            <div class="section-block right">
-                <div class="glass-card magnetic-trigger tilt-card">
-                    <div class="cc-light-sweep"></div>
-                    <svg class="saber-wrapper" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                        <rect class="saber-path" x="0" y="0" width="100%" height="100%" pathLength="100" />
-                    </svg>
-                    <div class="card-header">
-                        <span class="card-num">// 001. VFX</span>
-                        <span class="card-meta">After Effects</span>
-                    </div>
-                    <h2 class="card-title split-chars-dynamic">VFX Integration</h2>
-                    <p class="card-desc split-lines">Pushing the boundaries of raw footage. Advanced node and layer-based visual effects built to augment physical reality seamlessly.</p>
-                    <div class="video-box"><video autoplay loop muted playsinline><source src="B1Meteor.mp4" type="video/mp4"></video></div>
-                </div>
-            </div>
+        <div class="w-full lg:w-1/3 text-center z-10 about-text slide-up">
+            <h2 class="text-sm font-bold tracking-[0.3em] text-[#00d2ff] uppercase mb-6 split-chars-dynamic">About Me</h2>
+            <p class="text-xl md:text-2xl font-light leading-relaxed text-gray-200">
+                I synthesize <span class="text-white font-bold">precision</span> and <span class="text-[#00d2ff] font-bold">creativity</span>. As a B.Sc. Chemistry graduate, I bridge the gap between analytical science and cinematic storytelling. My lab is the digital canvas, where I craft hyper-realistic VFX and engineer immersive visual experiences.
+            </p>
         </div>
 
-        <div class="skew-elem">
-            <div class="section-block left" data-bgcolor="#060C18">
-                <div class="glass-card magnetic-trigger tilt-card">
-                    <div class="cc-light-sweep"></div>
-                    <svg class="saber-wrapper" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                        <rect class="saber-path" x="0" y="0" width="100%" height="100%" pathLength="100" />
-                    </svg>
-                    <div class="card-header">
-                        <span class="card-num">// 002. LENS</span>
-                        <span class="card-meta">Color Grade</span>
-                    </div>
-                    <h2 class="card-title split-chars-dynamic">Cinematic Aesthetics</h2>
-                    <p class="card-desc split-lines">Emulating professional camera setups. Utilizing deep color grading and environmental mapping to craft movie-grade atmospheres.</p>
-                    <div class="video-box"><video autoplay loop muted playsinline><source src="B2Beach.mp4" type="video/mp4"></video></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="skew-elem">
-            <div class="section-block right" data-bgcolor="#03060C">
-                <div class="glass-card magnetic-trigger tilt-card">
-                    <div class="cc-light-sweep"></div>
-                    <svg class="saber-wrapper" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                        <rect class="saber-path" x="0" y="0" width="100%" height="100%" pathLength="100" />
-                    </svg>
-                    <div class="card-header">
-                        <span class="card-num">// 003. FLOW</span>
-                        <span class="card-meta">Trend Sync</span>
-                    </div>
-                    <h2 class="card-title split-chars-dynamic">Trend Sync & Pacing</h2>
-                    <p class="card-desc split-lines">High-impact editing calculated to hold retention. Driven by hyper-smooth transitions, speed ramping, and heavy audio rhythm synchronization.</p>
-                    <div class="video-box"><video autoplay loop muted playsinline><source src="B3Tiki.mp4" type="video/mp4"></video></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="skew-elem">
-            <div class="section-block left" data-bgcolor="#000000">
-                <div class="glass-card magnetic-trigger tilt-card">
-                    <div class="cc-light-sweep"></div>
-                    <svg class="saber-wrapper" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                        <rect class="saber-path" x="0" y="0" width="100%" height="100%" pathLength="100" />
-                    </svg>
-                    <div class="card-header">
-                        <span class="card-num">// 004. TYPO</span>
-                        <span class="card-meta">Design Sys</span>
-                    </div>
-                    <h2 class="card-title split-chars-dynamic">Kinetic Typography</h2>
-                    <p class="card-desc split-lines">Transforming static text into a physical element. Engineering fluid motion profiles that communicate style, hierarchy, and information simultaneously.</p>
-                    <div class="video-box"><video autoplay loop muted playsinline><source src="B4Sngrm.mp4" type="video/mp4"></video></div>
-                </div>
+        <div class="w-full lg:w-1/3">
+            <div class="glass-card slide-right magnetic-trigger tilt-card p-4">
+                <div class="video-box"><video autoplay loop muted playsinline><source src="Slide-1R.mp4" type="video/mp4"></video></div>
             </div>
         </div>
     </section>
 
-    <section class="pipeline" id="arsenal">
-        <div class="section-header">
-            <span class="sh-small">System Specs</span>
-            <h2 class="sh-large split-lines">The Lab</h2>
-        </div>
-        <div class="arsenal-grid">
-            <div class="tech-item magnetic-trigger">
-                <div class="tech-header"><div class="tech-icon">[AE]</div><div class="tech-status"><div class="status-dot"></div> ONLINE</div></div>
-                <h4>Core Compositing</h4>
-                <p>Heavy-duty timeline management, 3D camera mapping, and rendering executed within the industry standard post-production suite.</p>
-                <span class="tech-spec">AFTER EFFECTS CC</span>
+    <section class="max-w-6xl mx-auto px-6 py-12 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="glass-card slide-left magnetic-trigger tilt-card p-10 md:col-span-2 group">
+                <span class="text-xs font-bold tracking-widest text-[#00d2ff] uppercase">Education</span>
+                <h3 class="text-3xl md:text-4xl font-bold mt-4 mb-2 group-hover:text-[#00d2ff] transition text-white split-chars-dynamic">B.Sc. in Chemistry</h3>
+                <p class="text-gray-400 text-lg mt-4">Core competencies in <span class="text-white">Electrochemistry</span> and <span class="text-white">Calculus</span>.</p>
             </div>
-            <div class="tech-item magnetic-trigger">
-                <div class="tech-header"><div class="tech-icon">[MOB]</div><div class="tech-status"><div class="status-dot"></div> ONLINE</div></div>
-                <h4>Node Systems</h4>
-                <p>Rapid deployment editing and node-based compositing designed for high-end social formatting on the fly.</p>
-                <span class="tech-spec">NODE VIDEO / CAPCUT</span>
-            </div>
-            <div class="tech-item magnetic-trigger">
-                <div class="tech-header"><div class="tech-icon">[HW]</div><div class="tech-status"><div class="status-dot"></div> OPTIMIZED</div></div>
-                <h4>Render Farm</h4>
-                <p>Custom-built desktop workstation configured to handle dense RAM previews, heavy cache loads, and multi-layered rendering.</p>
-                <span class="tech-spec">RYZEN 5 5600G / 8GB / B450M</span>
-            </div>
-            <div class="tech-item magnetic-trigger">
-                <div class="tech-header"><div class="tech-icon">[CAM]</div><div class="tech-status"><div class="status-dot"></div> RECORDING</div></div>
-                <h4>Optical Matrix</h4>
-                <p>Shooting deep, flexible color profiles ready for intense post-production grading and AI-enhanced scaling.</p>
-                <span class="tech-spec">SAMSUNG S24 FE</span>
+            <div class="glass-card slide-right magnetic-trigger tilt-card p-10 group">
+                <span class="text-xs font-bold tracking-widest text-gray-400 uppercase">Visuals</span>
+                <h3 class="text-2xl font-bold mt-4 group-hover:text-[#00d2ff] transition text-white split-chars-dynamic">Sony/Zeiss Aesthetic</h3>
+                <p class="text-gray-400 mt-4 text-sm leading-relaxed">Cinematic color science & precision photography.</p>
             </div>
         </div>
     </section>
 
-    <footer>
-        <div class="footer-bg-text">SANGRAM</div>
-        <div class="footer-content">
-            <div class="fc-top">
-                <div class="fc-cta">
-                    <h2>Initiate Contact</h2>
-                    <p>Open for freelance motion design and VFX compositing.</p>
+    <section class="py-24 px-[6vw] lg:px-[10vw] flex flex-col gap-24 relative" id="work">
+        <div style="position: absolute; top: 0; left: 50%; width: 1px; height: 100%; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.05), transparent); z-index: -1; transform: translateX(-50%);"></div>
+        
+        <div class="w-full flex justify-end" data-bgcolor="#0A1428">
+            <div class="glass-card slide-right magnetic-trigger tilt-card w-full lg:w-[48%] p-8 md:p-[4vw]">
+                <div class="cc-light-sweep"></div>
+                <svg class="saber-wrapper" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect class="saber-path" x="0" y="0" width="100%" height="100%" pathLength="100" /></svg>
+                <div class="flex justify-between items-center border-b border-[rgba(255,255,255,0.05)] pb-5 mb-8">
+                    <span class="font-mono text-sm text-[#00d2ff]">// 001. VFX</span>
+                    <span class="font-mono text-[10px] text-gray-500 uppercase tracking-widest">After Effects</span>
+                </div>
+                <h2 class="text-[clamp(30px,3vw,48px)] font-black tracking-tighter mb-5 leading-tight split-chars-dynamic">VFX Integration</h2>
+                <p class="text-[15px] text-gray-400 leading-relaxed mb-10">Pushing the boundaries of raw footage. Advanced node and layer-based visual effects built to augment physical reality seamlessly.</p>
+                <div class="video-box"><video autoplay loop muted playsinline><source src="B1Meteor.mp4" type="video/mp4"></video></div>
+            </div>
+        </div>
+
+        <div class="w-full flex justify-start" data-bgcolor="#060C18">
+            <div class="glass-card slide-left magnetic-trigger tilt-card w-full lg:w-[48%] p-8 md:p-[4vw]">
+                <div class="cc-light-sweep"></div>
+                <svg class="saber-wrapper" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect class="saber-path" x="0" y="0" width="100%" height="100%" pathLength="100" /></svg>
+                <div class="flex justify-between items-center border-b border-[rgba(255,255,255,0.05)] pb-5 mb-8">
+                    <span class="font-mono text-sm text-[#00d2ff]">// 002. LENS</span>
+                    <span class="font-mono text-[10px] text-gray-500 uppercase tracking-widest">Color Grade</span>
+                </div>
+                <h2 class="text-[clamp(30px,3vw,48px)] font-black tracking-tighter mb-5 leading-tight split-chars-dynamic">Cinematic Aesthetics</h2>
+                <p class="text-[15px] text-gray-400 leading-relaxed mb-10">Emulating professional camera setups. Utilizing deep color grading and environmental mapping to craft movie-grade atmospheres.</p>
+                <div class="video-box"><video autoplay loop muted playsinline><source src="B2Beach.mp4" type="video/mp4"></video></div>
+            </div>
+        </div>
+
+        <div class="w-full flex justify-end" data-bgcolor="#081020">
+            <div class="glass-card slide-right magnetic-trigger tilt-card w-full lg:w-[48%] p-8 md:p-[4vw]">
+                <div class="cc-light-sweep"></div>
+                <svg class="saber-wrapper" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect class="saber-path" x="0" y="0" width="100%" height="100%" pathLength="100" /></svg>
+                <div class="flex justify-between items-center border-b border-[rgba(255,255,255,0.05)] pb-5 mb-8">
+                    <span class="font-mono text-sm text-[#00d2ff]">// 003. FLOW</span>
+                    <span class="font-mono text-[10px] text-gray-500 uppercase tracking-widest">Trend Sync</span>
+                </div>
+                <h2 class="text-[clamp(30px,3vw,48px)] font-black tracking-tighter mb-5 leading-tight split-chars-dynamic">Trend Sync & Pacing</h2>
+                <p class="text-[15px] text-gray-400 leading-relaxed mb-10">High-impact editing calculated to hold retention. Driven by hyper-smooth transitions, speed ramping, and heavy audio rhythm synchronization.</p>
+                <div class="video-box"><video autoplay loop muted playsinline><source src="B3Tiki.mp4" type="video/mp4"></video></div>
+            </div>
+        </div>
+
+        <div class="w-full flex justify-start" data-bgcolor="#050912">
+            <div class="glass-card slide-left magnetic-trigger tilt-card w-full lg:w-[48%] p-8 md:p-[4vw]">
+                <div class="cc-light-sweep"></div>
+                <svg class="saber-wrapper" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect class="saber-path" x="0" y="0" width="100%" height="100%" pathLength="100" /></svg>
+                <div class="flex justify-between items-center border-b border-[rgba(255,255,255,0.05)] pb-5 mb-8">
+                    <span class="font-mono text-sm text-[#00d2ff]">// 004. TYPO</span>
+                    <span class="font-mono text-[10px] text-gray-500 uppercase tracking-widest">Design Sys</span>
+                </div>
+                <h2 class="text-[clamp(30px,3vw,48px)] font-black tracking-tighter mb-5 leading-tight split-chars-dynamic">Kinetic Typography</h2>
+                <p class="text-[15px] text-gray-400 leading-relaxed mb-10">Transforming static text into a physical element. Engineering fluid motion profiles that communicate style, hierarchy, and information simultaneously.</p>
+                <div class="video-box"><video autoplay loop muted playsinline><source src="B4Sngrm.mp4" type="video/mp4"></video></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="px-[6vw] lg:px-[10vw] py-24 relative z-10 border-t border-[rgba(255,255,255,0.05)] bg-[radial-gradient(circle_at_50%_100%,rgba(0,210,255,0.03)_0%,transparent_70%)]" id="arsenal">
+        <div class="text-center mb-16 relative slide-up">
+            <span class="block font-mono text-xs text-[#00d2ff] uppercase tracking-[5px] mb-4">System Specs</span>
+            <h2 class="text-[clamp(40px,7vw,80px)] font-black uppercase tracking-[-2px] text-white split-chars-dynamic">The Lab</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+            <div class="glass-card slide-left p-8 md:p-[4vw] magnetic-trigger group flex flex-col justify-between hover:-translate-y-4 transition duration-500 hover:border-[#00d2ff]/30">
+                <div class="flex justify-between items-start mb-10">
+                    <div class="font-mono font-black text-gray-500 border border-[rgba(255,255,255,0.05)] px-4 py-2 rounded-lg group-hover:text-[#00d2ff] transition">[AE]</div>
+                    <div class="font-mono text-[10px] text-[#00d2ff] flex items-center gap-2">
+                        <div class="w-1.5 h-1.5 bg-[#00d2ff] rounded-full shadow-[0_0_8px_rgba(0,210,255,0.6)] animate-pulse"></div> ONLINE
+                    </div>
+                </div>
+                <h4 class="text-[clamp(24px,2vw,32px)] font-black mb-4 tracking-tight split-chars-dynamic">Core Compositing</h4>
+                <p class="text-[15px] text-gray-400 leading-relaxed mb-8 font-normal">Heavy-duty timeline management, 3D camera mapping, and rendering executed within the industry standard post-production suite.</p>
+                <span class="font-mono text-[11px] px-5 py-2.5 bg-black border border-[rgba(255,255,255,0.05)] rounded inline-block text-[rgba(255,255,255,0.9)] tracking-widest self-start">AFTER EFFECTS CC</span>
+            </div>
+
+            <div class="glass-card slide-right p-8 md:p-[4vw] magnetic-trigger group flex flex-col justify-between hover:-translate-y-4 transition duration-500 hover:border-[#00d2ff]/30">
+                <div class="flex justify-between items-start mb-10">
+                    <div class="font-mono font-black text-gray-500 border border-[rgba(255,255,255,0.05)] px-4 py-2 rounded-lg group-hover:text-[#00d2ff] transition">[HW]</div>
+                    <div class="font-mono text-[10px] text-[#00d2ff] flex items-center gap-2">
+                        <div class="w-1.5 h-1.5 bg-[#00d2ff] rounded-full shadow-[0_0_8px_rgba(0,210,255,0.6)] animate-pulse"></div> OPTIMIZED
+                    </div>
+                </div>
+                <h4 class="text-[clamp(24px,2vw,32px)] font-black mb-4 tracking-tight split-chars-dynamic">Render Farm</h4>
+                <p class="text-[15px] text-gray-400 leading-relaxed mb-8 font-normal">Custom-built desktop workstation configured to handle dense RAM previews, heavy cache loads, and multi-layered rendering.</p>
+                <span class="font-mono text-[11px] px-5 py-2.5 bg-black border border-[rgba(255,255,255,0.05)] rounded inline-block text-[rgba(255,255,255,0.9)] tracking-widest self-start">RYZEN 5 5600G / 8GB</span>
+            </div>
+        </div>
+    </section>
+
+    <footer class="px-[6vw] py-[15vh] border-t border-[rgba(255,255,255,0.05)] relative overflow-hidden bg-black flex flex-col justify-between min-h-[80vh]">
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[22vw] font-black leading-[0.8] tracking-[-0.06em] text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.02)] text-center select-none z-0 transition duration-500 hover:[-webkit-text-stroke:1px_rgba(0,210,255,0.1)] whitespace-nowrap">SANGRAM</div>
+        <div class="relative z-10 flex flex-col justify-between h-full flex-grow">
+            <div class="flex justify-between items-start">
+                <div class="text-left">
+                    <h2 class="text-[clamp(40px,4vw,60px)] font-black mb-5 tracking-tight">Initiate Contact</h2>
+                    <p class="text-[16px] text-gray-400 font-mono mb-8">Ready to create? Connect via email or social modules.</p>
+                    <a href="mailto:skgartia152@gmail.com" class="inline-block bg-white text-black px-12 py-4 rounded-full font-bold text-lg hover:bg-[#00d2ff] hover:text-white transition duration-300 transform active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(0,210,255,0.6)]">
+                        Connect With Me
+                    </a>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <div class="fb-left">
-                    <h3>Sangram Keshari</h3>
-                    <p>SYSTEM STATUS: RENDER COMPLETE // LOCATION: BARGARH, ODISHA</p>
+            <div class="flex justify-between items-end border-t border-[rgba(255,255,255,0.1)] pt-10 mt-auto flex-wrap gap-10">
+                <div class="text-left">
+                    <h3 class="text-[20px] font-extrabold tracking-widest uppercase mb-3">Sangram Keshari Gartia</h3>
+                    <p class="text-gray-500 text-[12px] font-mono tracking-widest">SYSTEM STATUS: RENDER COMPLETE // CRAFTED WITH LOGIC AND LIGHT</p>
                 </div>
-                <div class="socials">
-                    <div class="magnetic-wrap"><a href="https://www.youtube.com/@SANGRAMYT" target="_blank" class="social-link magnetic-elem">YouTube</a></div>
-                    <div class="magnetic-wrap"><a href="https://www.instagram.com/iamsngrm" target="_blank" class="social-link magnetic-elem">Instagram</a></div>
-                    <div class="magnetic-wrap"><a href="https://discord.com/invite/kKM75jmQwu" target="_blank" class="social-link magnetic-elem">Discord</a></div>
+                
+                <div class="flex gap-4">
+                    <div class="magnetic-wrap" style="padding: 10px;">
+                        <a href="https://www.youtube.com/@SangramOfficial" target="_blank" title="YouTube" class="w-12 h-12 rounded-full border border-[rgba(255,255,255,0.1)] flex items-center justify-center bg-[rgba(255,255,255,0.02)] hover:bg-[#00d2ff] hover:border-transparent hover:shadow-[0_0_20px_rgba(0,210,255,0.5)] transition-all duration-300 magnetic-elem group">
+                            <i class="fa-brands fa-youtube text-white text-xl group-hover:text-black transition-colors"></i>
+                        </a>
+                    </div>
+                    <div class="magnetic-wrap" style="padding: 10px;">
+                        <a href="https://www.instagram.com/sngrm.fx" target="_blank" title="Instagram" class="w-12 h-12 rounded-full border border-[rgba(255,255,255,0.1)] flex items-center justify-center bg-[rgba(255,255,255,0.02)] hover:bg-[#00d2ff] hover:border-transparent hover:shadow-[0_0_20px_rgba(0,210,255,0.5)] transition-all duration-300 magnetic-elem group">
+                            <i class="fa-brands fa-instagram text-white text-xl group-hover:text-black transition-colors"></i>
+                        </a>
+                    </div>
+                    <div class="magnetic-wrap" style="padding: 10px;">
+                        <a href="https://discord.com/invite/kKM75jmQwu" target="_blank" title="Discord" class="w-12 h-12 rounded-full border border-[rgba(255,255,255,0.1)] flex items-center justify-center bg-[rgba(255,255,255,0.02)] hover:bg-[#00d2ff] hover:border-transparent hover:shadow-[0_0_20px_rgba(0,210,255,0.5)] transition-all duration-300 magnetic-elem group">
+                            <i class="fa-brands fa-discord text-white text-xl group-hover:text-black transition-colors"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -518,10 +399,8 @@
 
         // 1. LENIS SMOOTH SCROLL
         const lenis = new Lenis({ duration: 1.5, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), direction: 'vertical', smooth: true });
-        let scrollVelocity = 0;
         lenis.on('scroll', (e) => {
             ScrollTrigger.update();
-            scrollVelocity = e.velocity;
             document.getElementById('hud-scroll').innerText = Math.floor(e.scroll).toString().padStart(4, '0');
             const progress = (e.scroll / (document.body.scrollHeight - window.innerHeight)) * 100;
             document.querySelector('.scroll-progress-fill').style.height = `${progress}%`;
@@ -538,7 +417,7 @@
 
         // 3. TERMINAL BOOT PRELOADER
         const termBody = document.getElementById('term-body');
-        const termLines = ["Connecting to local server...", "Loading WebGL Renderer... OK", "Fetching 3D Model: phoenix_bird.glb... OK", "Compiling GLSL Shaders... OK", "Allocating Video RAM... OK", "Initializing Main Sequence..."];
+        const termLines = ["Connecting to local server...", "Synthesizing Chemistry & Visuals... OK", "Fetching 3D Assets... OK", "Compiling Gojo Blue Shaders... OK", "Allocating Video RAM... OK", "Initializing Main Sequence..."];
         const counterText = document.querySelector('.loader-math');
         const fillBar = document.querySelector('.loader-bar-fill');
         let loadProgress = 0, lineIndex = 0;
@@ -567,32 +446,28 @@
                 onComplete: () => {
                     document.querySelector('.preloader').style.display = 'none';
                     lenis.start(); 
-                    gsap.to('.model-container', { opacity: 1, scale: 1, y: 0, duration: 2.5, ease: "power3.out" });
                 }
             });
             
-            // Explicitly force Profile Pic opacity
             gsap.to('#hero-profile-pic', { opacity: 1, duration: 1.5, ease: "power2.out", delay: 0.5 });
             
-            // Animate SNGRM text as a whole block to keep background-clip text intact
             gsap.fromTo('.hero-name', 
                 { opacity: 0, scale: 0.95, filter: "blur(10px)" },
                 { opacity: 1, scale: 1, filter: "blur(0px)", duration: 2, ease: "power3.out", delay: 0.5 }
             );
+            gsap.to('.hero-subtitle', { opacity: 1, y: -10, duration: 1, ease: "power2.out", delay: 1 });
         }
 
-        // 4. FIXED PROFILE PIC PARALLAX & HERO SCROLL LIGHT SWEEP
-        gsap.set("#hero-profile-pic", { top: "35vh", left: "50vw", xPercent: -50, yPercent: -50, width: "160px", height: "160px" });
-        
+        // 4. FIXED PROFILE PIC PARALLAX
+        // Changed scrub to 0.2 for higher intensity snapping
+        gsap.set("#hero-profile-pic", { top: "28vh", left: "50vw", xPercent: -50, yPercent: -50, width: "160px", height: "160px" });
         gsap.to("#hero-profile-pic", {
-            scrollTrigger: { trigger: "body", start: "top top", end: "300px top", scrub: 1 },
+            scrollTrigger: { trigger: "body", start: "top top", end: "300px top", scrub: 0.2 },
             top: "40px", left: "6vw", xPercent: 0, yPercent: 0, width: "50px", height: "50px",
             ease: "power2.inOut"
         });
-
-        // Wipes the text glare smoothly as you scroll
         gsap.to(".hero-name", {
-            scrollTrigger: { trigger: "body", start: "top top", end: "500px top", scrub: 1 },
+            scrollTrigger: { trigger: "body", start: "top top", end: "500px top", scrub: 0.2 },
             backgroundPosition: "-50% center", ease: "none"
         });
 
@@ -609,7 +484,7 @@
                 if (this.x < 0 || this.x > canvas.width) this.speedX *= -1; if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
                 if(mouse.x) { let dx = mouse.x - this.x; let dy = mouse.y - this.y; let distance = Math.sqrt(dx * dx + dy * dy); if(distance < mouse.radius) { this.x -= dx * 0.01; this.y -= dy * 0.01; } }
             }
-            draw() { ctx.fillStyle = 'rgba(144, 224, 175, 0.5)'; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+            draw() { ctx.fillStyle = 'rgba(0, 210, 255, 0.5)'; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
         }
         function initParticles() { for (let i = 0; i < 120; i++) { particlesArray.push(new Particle()); } }
         function connectParticles() {
@@ -618,7 +493,7 @@
                 for (let b = a; b < particlesArray.length; b++) {
                     let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
                     if (distance < (canvas.width / 10) * (canvas.height / 10)) {
-                        opacityValue = 1 - (distance / 20000); ctx.strokeStyle = `rgba(144, 224, 175, ${opacityValue * 0.2})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(particlesArray[a].x, particlesArray[a].y); ctx.lineTo(particlesArray[b].x, particlesArray[b].y); ctx.stroke();
+                        opacityValue = 1 - (distance / 20000); ctx.strokeStyle = `rgba(0, 210, 255, ${opacityValue * 0.2})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(particlesArray[a].x, particlesArray[a].y); ctx.lineTo(particlesArray[b].x, particlesArray[b].y); ctx.stroke();
                     }
                 }
             }
@@ -650,93 +525,4 @@
             el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
         });
         document.querySelectorAll('.magnetic-wrap').forEach(wrap => {
-            const elem = wrap.querySelector('.magnetic-elem');
-            wrap.addEventListener('mousemove', (e) => {
-                const rect = wrap.getBoundingClientRect();
-                const dx = (e.clientX - (rect.left + rect.width / 2)) * 0.4; const dy = (e.clientY - (rect.top + rect.height / 2)) * 0.4;
-                gsap.to(elem, { x: dx, y: dy, duration: 0.4, ease: "power3.out" });
-            });
-            wrap.addEventListener('mouseleave', () => { gsap.to(elem, { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.4)" }); });
-        });
-
-        // 8. CHARACTER SPLICING ENGINE FOR PORTFOLIO CARDS
-        document.querySelectorAll('.split-chars-dynamic').forEach(el => {
-            let text = el.innerText; el.innerHTML = '';
-            for(let i=0; i<text.length; i++){
-                let char = text[i] === ' ' ? '&nbsp;' : text[i];
-                let wrapper = document.createElement('span'); wrapper.style.overflow = 'hidden'; wrapper.style.display = 'inline-block';
-                let inner = document.createElement('span'); inner.innerHTML = char; 
-                inner.style.transform = 'translateY(110%)'; inner.style.display = 'inline-block'; inner.classList.add('gsap-char');
-                wrapper.appendChild(inner); el.appendChild(wrapper);
-            }
-        });
-
-        document.querySelectorAll('.split-lines').forEach(el => {
-            let text = el.innerText; el.innerHTML = '';
-            let wrapper = document.createElement('div'); wrapper.style.overflow = 'hidden'; wrapper.style.display = 'inline-block';
-            let inner = document.createElement('div'); inner.innerText = text; inner.style.transform = 'translateY(110%)'; inner.classList.add('gsap-line');
-            wrapper.appendChild(inner); el.appendChild(wrapper);
-        });
-
-        // 9. ADVANCED SCROLLTRIGGERS
-        gsap.to(".track-1", { xPercent: -50, ease: "none", scrollTrigger: { trigger: ".marquee-section", start: "top bottom", end: "bottom top", scrub: 1 } });
-        gsap.to(".track-2", { xPercent: 50, ease: "none", scrollTrigger: { trigger: ".marquee-section", start: "top bottom", end: "bottom top", scrub: 1 } });
-
-        const skewElems = document.querySelectorAll('.skew-elem');
-        gsap.ticker.add(() => {
-            const skewAmount = scrollVelocity * 0.15; 
-            skewElems.forEach(elem => { gsap.to(elem, { rotationX: skewAmount, duration: 0.2, ease: "power2.out", overwrite: true }); });
-        });
-
-        // Card Scroll Animations & Realistic Glare sweeps
-        document.querySelectorAll('.section-block').forEach((sec) => {
-            let bgColor = sec.getAttribute('data-bgcolor');
-            if(bgColor) {
-                ScrollTrigger.create({ trigger: sec, start: "top 50%", end: "bottom 50%", onEnter: () => gsap.to("body", { backgroundColor: bgColor, duration: 1.5 }), onEnterBack: () => gsap.to("body", { backgroundColor: bgColor, duration: 1.5 }) });
-            }
-            
-            // Slow, cinematic letter reveal
-            gsap.to(sec.querySelectorAll('.gsap-char'), { scrollTrigger: { trigger: sec, start: "top 75%" }, y: '0%', duration: 1.5, stagger: 0.04, ease: "power4.out" });
-            gsap.to(sec.querySelectorAll('.gsap-line'), { scrollTrigger: { trigger: sec, start: "top 75%" }, y: '0%', duration: 1.5, stagger: 0.1, ease: "power4.out", delay: 0.2 });
-            
-            ScrollTrigger.create({ trigger: sec, start: "top 60%", onEnter: () => { sec.querySelector('.glass-card').classList.add('saber-active'); } });
-
-            // SCROLL-SYNCED REALISTIC GLARE OVER THE CARDS
-            const sweepElement = sec.querySelector('.cc-light-sweep');
-            if (sweepElement) {
-                gsap.to(sweepElement, {
-                    scrollTrigger: {
-                        trigger: sec,
-                        start: "top bottom", 
-                        end: "bottom top",    
-                        scrub: 1              
-                    },
-                    left: "200%", // Wipes perfectly across the card as it passes the screen
-                    ease: "none"
-                });
-            }
-        });
-
-        gsap.to(document.querySelectorAll('.sh-large .gsap-line'), { scrollTrigger: { trigger: '#arsenal', start: "top 80%" }, y: '0%', duration: 1, ease: "power4.out" });
-
-        // 10. THE MASTER 3D FLIGHT PATH
-        const modelEl = document.getElementById('phoenix-model');
-        const rot = { pitch: 0, yaw: 0, roll: 0 }; 
-        const updateModel3D = () => { if(modelEl.setAttribute) modelEl.setAttribute('orientation', `${rot.pitch}deg ${rot.yaw}deg ${rot.roll}deg`); };
-
-        let flightPath = gsap.timeline({ scrollTrigger: { trigger: "#work", start: "top 90%", endTrigger: "#arsenal", end: "top 40%", scrub: 2.5 } });
-        flightPath.to(".model-container", { x: "45vw", y: "15vh", scale: 1.2, ease: "sine.inOut" }, "f1")
-          .to(rot, { pitch: 15, yaw: 25, roll: -20, onUpdate: updateModel3D, ease: "sine.inOut" }, "f1")
-        .to(".model-container", { x: "10vw", y: "40vh", scale: 0.9, ease: "sine.inOut" }, "f2")
-        .to(rot, { pitch: -5, yaw: -160, roll: 20, onUpdate: updateModel3D, ease: "sine.inOut" }, "f2")
-        .to(".model-container", { x: "45vw", y: "65vh", scale: 1.3, ease: "sine.inOut" }, "f3")
-        .to(rot, { pitch: 12, yaw: 20, roll: -15, onUpdate: updateModel3D, ease: "sine.inOut" }, "f3")
-        .to(".model-container", { x: "10vw", y: "90vh", scale: 1, ease: "sine.inOut" }, "f4")
-        .to(rot, { pitch: 0, yaw: -180, roll: 0, onUpdate: updateModel3D, ease: "sine.inOut" }, "f4")
-        .to(".model-container", { x: "30vw", y: "135vh", scale: 1.6, ease: "power1.inOut" }, "f5")
-        .to(rot, { pitch: 35, yaw: -20, roll: -15, onUpdate: updateModel3D, ease: "power1.inOut" }, "f5");
-
-    </script>
-</body>
-</html>
-
+            const elem = wrap.querySelector('.magnetic-e
