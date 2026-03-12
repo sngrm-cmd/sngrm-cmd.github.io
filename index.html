@@ -525,4 +525,102 @@
             el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
         });
         document.querySelectorAll('.magnetic-wrap').forEach(wrap => {
-            const elem = wrap.querySelector('.magnetic-e
+            const elem = wrap.querySelector('.magnetic-elem');
+            wrap.addEventListener('mousemove', (e) => {
+                const rect = wrap.getBoundingClientRect();
+                const dx = (e.clientX - (rect.left + rect.width / 2)) * 0.4; const dy = (e.clientY - (rect.top + rect.height / 2)) * 0.4;
+                gsap.to(elem, { x: dx, y: dy, duration: 0.4, ease: "power3.out" });
+            });
+            wrap.addEventListener('mouseleave', () => { gsap.to(elem, { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.4)" }); });
+        });
+
+        // 8. CHARACTER SPLICING & ANIMATION
+        document.querySelectorAll('.split-chars-dynamic').forEach(el => {
+            let text = el.innerText; el.innerHTML = '';
+            for(let i=0; i<text.length; i++){
+                let char = text[i] === ' ' ? ' ' : text[i];
+                let wrapper = document.createElement('span'); 
+                wrapper.style.overflow = 'hidden'; wrapper.style.display = 'inline-block';
+                let inner = document.createElement('span'); inner.innerHTML = char; 
+                inner.style.transform = 'translateY(110%)'; 
+                inner.style.opacity = '0'; 
+                inner.style.display = 'inline-block'; 
+                inner.classList.add('gsap-char');
+                wrapper.appendChild(inner); el.appendChild(wrapper);
+            }
+        });
+
+        // 9. SCROLL ANIMATIONS: SLIDE-INS & COLOR TRIGGERS
+        // Background color shifts 
+        document.querySelectorAll('section[data-bgcolor]').forEach((sec, index) => {
+            let bgColor = sec.getAttribute('data-bgcolor');
+            ScrollTrigger.create({ 
+                trigger: sec, 
+                start: "top 50%", 
+                end: "bottom 50%", 
+                onEnter: () => gsap.to("body", { backgroundColor: bgColor, duration: 1.5 }), 
+                onEnterBack: () => gsap.to("body", { backgroundColor: bgColor, duration: 1.5 }),
+                onLeaveBack: () => {
+                    if(index === 0) gsap.to("body", { backgroundColor: "#050505", duration: 1.5 });
+                }
+            });
+        });
+
+        // Slide Left animations
+        document.querySelectorAll('.slide-left').forEach(el => {
+            gsap.from(el, { x: -120, opacity: 0, duration: 1.2, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none reverse" } });
+        });
+
+        // Slide Right animations
+        document.querySelectorAll('.slide-right').forEach(el => {
+            gsap.from(el, { x: 120, opacity: 0, duration: 1.2, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none reverse" } });
+        });
+
+        // Slide Up animations
+        document.querySelectorAll('.slide-up').forEach(el => {
+            gsap.from(el, { y: 100, opacity: 0, duration: 1.2, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none reverse" } });
+        });
+
+        // Character Stagger inside containers
+        document.querySelectorAll('.glass-card, .slide-up, .about-text').forEach((card) => {
+            const chars = card.querySelectorAll('.gsap-char');
+            if(chars.length) {
+                gsap.to(chars, { 
+                    scrollTrigger: { trigger: card, start: "top 85%", toggleActions: "play none none reverse" }, 
+                    y: '0%', opacity: 1, duration: 0.8, stagger: 0.02, ease: "back.out(1.5)" 
+                });
+            }
+            
+            // Saber Line Trigger 
+            ScrollTrigger.create({ 
+                trigger: card, 
+                start: "top 70%", 
+                onEnter: () => card.classList.add('saber-active'),
+                onLeaveBack: () => card.classList.remove('saber-active')
+            });
+            
+            // Glare Sweep Trigger (Changed scrub to 0.2)
+            const sweepElement = card.querySelector('.cc-light-sweep');
+            if (sweepElement) {
+                gsap.to(sweepElement, { scrollTrigger: { trigger: card, start: "top bottom", end: "bottom top", scrub: 0.2 }, left: "200%", ease: "none" });
+            }
+        });
+
+        // 10. 3D MODELS SCROLL ROTATION
+        // Changed scrub to 0.2 for snappier 3D object rotation
+        const model3Ds = document.querySelectorAll('.model-3d-wrap model-viewer');
+        const scrollObj = { rotY: 0 };
+        gsap.to(scrollObj, {
+            rotY: 1080, // 3 full rotations
+            scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 0.2 },
+            onUpdate: () => {
+                model3Ds.forEach((m) => {
+                    const speed = parseFloat(m.parentElement.getAttribute('data-speed'));
+                    if (m.setAttribute) m.setAttribute('orientation', `0deg ${scrollObj.rotY * speed}deg 0deg`);
+                });
+            }
+        });
+
+    </script>
+</body>
+</html>
