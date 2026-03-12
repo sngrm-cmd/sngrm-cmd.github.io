@@ -3,653 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sangram | Elite Motion & VFX</title>
-    
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    
-    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
-
+    <title>SNGRM | Chemistry & Creative Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ==========================================================================
-           1. CSS VARIABLES & RESET
-           ========================================================================== */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
-
-        :root {
-            /* Color Palette */
-            --bg-deep: #02050A;
-            --bg-mid: #0A1424;
-            --bg-highlight: #162B4A;
-            --accent-primary: #90E0AF;
-            --accent-secondary: #4A88D9;
-            --text-pure: #FFFFFF;
-            --text-dim: rgba(255, 255, 255, 0.55);
-            --text-dark: #02050A;
-            
-            /* Glassmorphism */
-            --glass-bg: rgba(255, 255, 255, 0.015);
-            --glass-border: rgba(255, 255, 255, 0.04);
-            
-            /* Easing Curves */
-            --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
-            --ease-snappy: cubic-bezier(0.85, 0, 0.15, 1);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
-        
-        html.lenis { height: auto; }
-        .lenis.lenis-smooth { scroll-behavior: auto; }
-        .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
-        .lenis.lenis-stopped { overflow: hidden; }
-        .lenis.lenis-scrolling iframe { pointer-events: none; }
-
-        body {
-            background-color: var(--bg-deep);
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(74, 136, 217, 0.08), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(144, 224, 175, 0.05), transparent 25%);
-            color: var(--text-pure);
-            font-family: 'Inter', sans-serif;
+        /* BASE & COLOR PALETTE */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            color: white; 
             overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            background-color: #050505;
+        }
+        .gojo-blue { color: #00d2ff; }
+        .bg-gojo-blue { background-color: #00d2ff; }
+        .glass { 
+            background: rgba(255, 255, 255, 0.02); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
         }
 
-        /* ==========================================================================
-           2. GLOBAL SYSTEMS (Cursor, Noise, Preloader)
-           ========================================================================== */
-        
-        /* Dynamic SVG Noise Texture */
-        .noise {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            pointer-events: none; z-index: 9999; opacity: 0.035; mix-blend-mode: overlay;
-            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        /* SCROLL ANIMATIONS */
+        .hidden-left { opacity: 0; transform: translateX(-100px); transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .hidden-right { opacity: 0; transform: translateX(100px); transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .hidden-up { opacity: 0; transform: translateY(50px); transition: all 0.8s ease-out; }
+        .show { opacity: 1; transform: translate(0); }
+
+        /* FLOATING BUBBLES EFFECT */
+        .bubble {
+            opacity: 0;
+            transform: scale(0.5) translateY(50px);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.1);
         }
-
-        /* Advanced Magnetic Cursor */
-        .cursor-dot {
-            width: 6px; height: 6px; background: var(--accent-primary);
-            border-radius: 50%; position: fixed; top: 0; left: 0;
-            pointer-events: none; z-index: 10000; transform: translate(-50%, -50%);
-            transition: opacity 0.3s, transform 0.1s;
+        .bubble.pop { opacity: 1; transform: scale(1) translateY(0); }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
         }
-        .cursor-ring {
-            width: 40px; height: 40px; border: 1px solid rgba(144, 224, 175, 0.4);
-            border-radius: 50%; position: fixed; top: 0; left: 0;
-            pointer-events: none; z-index: 9999; transform: translate(-50%, -50%);
-            transition: width 0.4s var(--ease-apple), height 0.4s var(--ease-apple), background 0.4s var(--ease-apple), border-color 0.4s;
-        }
-        /* Cursor Modifiers triggered by JS */
-        .cursor-hover .cursor-ring { width: 80px; height: 80px; background: rgba(144, 224, 175, 0.05); border-color: transparent; backdrop-filter: blur(2px); }
-        .cursor-hover .cursor-dot { transform: translate(-50%, -50%) scale(0.5); }
-
-        /* AE Rendering Engine Preloader */
-        .preloader {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #000; z-index: 100000; display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-        }
-        .loader-brand { font-size: 12px; font-weight: 800; letter-spacing: 6px; margin-bottom: 40px; color: var(--text-dim); }
-        .loader-math { font-family: 'JetBrains Mono', monospace; font-size: 110px; font-weight: 700; letter-spacing: -4px; line-height: 1; }
-        .loader-bar-bg { width: 300px; height: 1px; background: rgba(255,255,255,0.1); margin-top: 30px; position: relative; overflow: hidden; }
-        .loader-bar-fill { position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: var(--accent-primary); box-shadow: 0 0 10px var(--accent-primary); }
-        .loader-status { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent-primary); margin-top: 15px; text-transform: uppercase; letter-spacing: 2px; }
-
-        /* ==========================================================================
-           3. NAVIGATION & MAGNETIC UI
-           ========================================================================== */
-        nav {
-            position: fixed; top: 0; left: 0; width: 100%; padding: 30px 6vw;
-            display: flex; justify-content: space-between; align-items: center;
-            z-index: 1000; mix-blend-mode: difference;
-        }
-        .nav-logo { display: flex; align-items: center; gap: 15px; }
-        .nav-logo img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; filter: grayscale(100%) contrast(1.2); transition: filter 0.5s; }
-        .nav-logo:hover img { filter: grayscale(0%) contrast(1); }
-        .nav-logo span { font-size: 16px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
-        
-        .nav-links { display: flex; gap: 10px; }
-        .magnetic-wrap { padding: 10px 20px; display: inline-block; position: relative; }
-        .magnetic-wrap a {
-            color: var(--text-pure); text-decoration: none; font-size: 13px; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.7; transition: opacity 0.3s;
-            display: inline-block;
-        }
-        .magnetic-wrap:hover a { opacity: 1; color: var(--accent-primary); }
-
-        /* ==========================================================================
-           4. HERO & ABOUT SECTION
-           ========================================================================== */
-        .hero {
-            height: 100vh; display: flex; flex-direction: column; justify-content: center;
-            align-items: center; position: relative; padding: 0 6vw;
-        }
-        .hero-tagline { font-family: 'JetBrains Mono', monospace; color: var(--accent-primary); font-size: 12px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 3vh; overflow: hidden; }
-        .hero-title {
-            font-size: clamp(80px, 12vw, 200px); font-weight: 800; line-height: 0.85;
-            letter-spacing: -0.04em; text-transform: uppercase; text-align: center;
-            /* Premium gradient text masking */
-            background: linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0.4) 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 2vh;
-        }
-        
-        .scroll-indicator { position: absolute; bottom: 5vh; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 15px; opacity: 0.5; }
-        .scroll-indicator span { font-size: 10px; text-transform: uppercase; letter-spacing: 3px; font-weight: 600; }
-        .scroll-line { width: 1px; height: 60px; background: rgba(255,255,255,0.2); position: relative; overflow: hidden; }
-        .scroll-line::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%; background: var(--text-pure); animation: scrollDrop 2s cubic-bezier(0.77, 0, 0.175, 1) infinite; }
-        @keyframes scrollDrop { 0% { transform: translateY(-100%); } 100% { transform: translateY(200%); } }
-
-        /* Structured About Section */
-        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8vw; padding: 15vh 10vw 20vh; align-items: center; }
-        .about-left .stat { display: flex; flex-direction: column; margin-bottom: 40px; border-left: 1px solid var(--glass-border); padding-left: 20px; }
-        .about-left .stat-num { font-size: 40px; font-weight: 800; color: var(--accent-primary); line-height: 1; margin-bottom: 5px; }
-        .about-left .stat-label { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); }
-        
-        .about-right p { font-size: clamp(20px, 2.5vw, 32px); font-weight: 300; line-height: 1.6; color: var(--text-dim); margin-bottom: 30px; }
-        .about-right p strong { color: var(--text-pure); font-weight: 500; }
-
-        /* ==========================================================================
-           5. INFINITE MARQUEE
-           ========================================================================== */
-        .marquee-wrapper { width: 100vw; overflow: hidden; padding: 5vh 0; border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); background: rgba(2, 5, 10, 0.5); position: relative; z-index: 10; }
-        .marquee-inner { display: flex; width: max-content; }
-        .marquee-part { display: flex; align-items: center; padding: 0 2vw; }
-        .marquee-part h3 { font-size: clamp(40px, 6vw, 80px); font-weight: 800; text-transform: uppercase; -webkit-text-stroke: 1px rgba(255,255,255,0.2); color: transparent; white-space: nowrap; margin-right: 40px; }
-        .marquee-part .star { color: var(--accent-primary); font-size: 30px; margin-right: 40px; }
-
-        /* ==========================================================================
-           6. THE 3D MODEL & PORTFOLIO LAYOUT
-           ========================================================================== */
-        .model-container {
-            position: fixed; top: 10vh; left: 0; width: 600px; height: 600px;
-            z-index: 50; pointer-events: none; perspective: 1500px;
-        }
-        /* Continuous floating animation wrapper */
-        .model-floater { width: 100%; height: 100%; animation: organicFloat 6s ease-in-out infinite; }
-        @keyframes organicFloat { 0%, 100% { transform: translateY(0) rotateX(0deg); } 50% { transform: translateY(-15px) rotateX(2deg); } }
-        
-        model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
-
-        .portfolio-sections { padding: 15vh 10vw 25vh; display: flex; flex-direction: column; gap: 30vh; position: relative; }
-        
-        /* The Connecting Spine */
-        .spine-line { position: absolute; top: 0; left: 50%; width: 1px; height: 100%; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.1), transparent); z-index: -1; transform: translateX(-50%); }
-
-        .section-block { display: flex; width: 100%; align-items: center; }
-        .section-block:nth-child(odd) { justify-content: flex-end; }
-        .section-block:nth-child(even) { justify-content: flex-start; }
-
-        /* --------------------------------------------------------------------------
-           Advanced Mouse-Tracking Glass Cards 
-           -------------------------------------------------------------------------- */
-        .glass-card {
-            width: 45%; padding: 3vw; border-radius: 24px; position: relative; z-index: 10;
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
-            overflow: hidden; /* Contains the glow */
-        }
-        /* The script calculates mouse X/Y and updates these CSS variables to move the glow */
-        .glass-card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(800px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(255,255,255,0.06), transparent 40%);
-            z-index: -1; transition: opacity 0.5s; opacity: 0; pointer-events: none;
-        }
-        .glass-card:hover::before { opacity: 1; }
-
-        .card-num { font-family: 'JetBrains Mono', monospace; font-size: 16px; color: var(--accent-primary); margin-bottom: 20px; display: block; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; }
-        
-        .card-title { font-size: clamp(32px, 3.5vw, 48px); font-weight: 800; letter-spacing: -1px; margin-bottom: 20px; line-height: 1.1; }
-        
-        .card-desc { font-size: 16px; color: var(--text-dim); line-height: 1.7; margin-bottom: 40px; font-weight: 300; }
-
-        .video-box {
-            border-radius: 12px; overflow: hidden; position: relative;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
-            transform: scale(0.98); transition: transform 0.6s var(--ease-apple);
-        }
-        .glass-card:hover .video-box { transform: scale(1); }
-        .video-box video { width: 100%; display: block; filter: brightness(0.85) contrast(1.1); transition: filter 0.6s; }
-        .glass-card:hover .video-box video { filter: brightness(1) contrast(1); }
-
-        /* ==========================================================================
-           7. PRODUCTION PIPELINE & ARSENAL
-           ========================================================================== */
-        .pipeline { padding: 10vh 10vw 20vh; position: relative; z-index: 10; }
-        .section-header { text-align: center; margin-bottom: 10vh; }
-        .sh-small { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 3px; display: block; margin-bottom: 15px; }
-        .sh-large { font-size: clamp(40px, 5vw, 80px); font-weight: 800; text-transform: uppercase; letter-spacing: -2px; }
-
-        .arsenal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2vw; }
-        .tech-item {
-            padding: 4vw; background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-            border: 1px solid var(--glass-border); border-radius: 20px; position: relative;
-            transition: transform 0.5s var(--ease-apple), border-color 0.5s;
-        }
-        .tech-item:hover { transform: translateY(-10px); border-color: rgba(255,255,255,0.15); }
-        .tech-icon { font-size: 24px; color: var(--accent-primary); margin-bottom: 20px; font-family: 'JetBrains Mono', monospace; }
-        .tech-item h4 { font-size: 24px; font-weight: 700; margin-bottom: 15px; }
-        .tech-item p { font-size: 15px; color: var(--text-dim); line-height: 1.6; margin-bottom: 20px; }
-        .tech-spec { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 6px 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 50px; display: inline-block; color: var(--accent-primary); }
-
-        /* ==========================================================================
-           8. MASSIVE FOOTER
-           ========================================================================== */
-        footer { padding: 15vh 6vw 5vh; border-top: 1px solid var(--glass-border); position: relative; overflow: hidden; }
-        .footer-giant { font-size: 18vw; font-weight: 800; line-height: 0.8; letter-spacing: -0.05em; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.05); text-align: center; margin-bottom: 10vh; user-select: none; }
-        .footer-bottom { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 40px; }
-        .fb-left h3 { font-size: 20px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
-        .fb-left p { color: var(--text-dim); font-size: 12px; font-family: 'JetBrains Mono', monospace; }
-        .socials { display: flex; gap: 30px; }
-        .social-link { color: var(--text-pure); text-decoration: none; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; position: relative; padding-bottom: 5px; overflow: hidden; display: inline-block; }
-        .social-link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background: var(--accent-primary); transform: translateX(-101%); transition: transform 0.4s var(--ease-apple); }
-        .social-link:hover::after { transform: translateX(0); }
-
-        /* Responsive Breakpoints */
-        @media (max-width: 1024px) {
-            .about-grid { grid-template-columns: 1fr; gap: 40px; }
-            .section-block { justify-content: center !important; }
-            .glass-card { width: 100%; }
-            .spine-line { display: none; }
-            .model-container { display: none; } /* Hide heavy 3D */
-            .cursor-dot, .cursor-ring { display: none; } /* Native touch cursor */
-            * { cursor: auto; }
-            .arsenal-grid { grid-template-columns: 1fr; }
-            .footer-bottom { flex-direction: column; gap: 40px; align-items: flex-start; }
-        }
+        .floating { animation: float 4s ease-in-out infinite; }
+        .delay-1 { transition-delay: 0.1s; animation-delay: 0s; }
+        .delay-2 { transition-delay: 0.3s; animation-delay: 1s; }
+        .delay-3 { transition-delay: 0.5s; animation-delay: 2s; }
     </style>
 </head>
-<body>
+<body class="selection:bg-[#00d2ff]/30 antialiased">
 
-    <div class="noise"></div>
-    <div class="cursor-dot"></div>
-    <div class="cursor-ring"></div>
-
-    <div class="preloader">
-        <div class="loader-brand">SANGRAM.SYS</div>
-        <div class="loader-math">000</div>
-        <div class="loader-bar-bg"><div class="loader-bar-fill"></div></div>
-        <div class="loader-status">Initializing Render Engine...</div>
+    <div class="fixed top-0 left-0 w-full h-full z-[-1] bg-[#050505]">
+        <video id="bgVideo" loop muted playsinline preload="metadata" class="w-full h-full object-cover opacity-30">
+            <source src="bg-video.mp4" type="video/mp4">
+        </video>
+        <div class="absolute inset-0 bg-gradient-to-b from-[#050505]/30 via-[#050505]/70 to-[#050505]/95"></div>
     </div>
 
-    <div class="model-container">
-        <div class="model-floater">
-            <model-viewer src="phoenix_bird.glb" autoplay camera-controls="false" disable-zoom exposure="1.5" shadow-intensity="1.5" shadow-softness="0.5" environment-image="legacy"></model-viewer>
-        </div>
-    </div>
+    <header class="relative h-screen flex flex-col items-center justify-center text-center">
+        <div class="z-10 px-4 hidden-up observe flex flex-col items-center">
+            
+            <img src="profile.jpg" alt="Profile" class="w-28 h-28 md:w-36 md:h-36 rounded-full object-cover mb-6 border-2 border-[#00d2ff]/30 shadow-[0_0_30px_rgba(0,210,255,0.2)]">
 
-    <nav>
-        <div class="nav-logo magnetic-wrap magnetic-elem">
-            <img src="profile.jpg" alt="Sangram Profile">
-            <span>Sangram</span>
+            <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-4 drop-shadow-2xl">
+                SNGRM.
+            </h1>
+            <p class="text-xl md:text-3xl font-light text-gray-300 max-w-3xl mx-auto drop-shadow-md">
+                Chemistry Graduate. <span class="gojo-blue font-bold">Visual Storyteller.</span>
+            </p>
         </div>
-        <div class="nav-links">
-            <div class="magnetic-wrap"><a href="#about" class="magnetic-elem">Data</a></div>
-            <div class="magnetic-wrap"><a href="#work" class="magnetic-elem">Output</a></div>
-            <div class="magnetic-wrap"><a href="#arsenal" class="magnetic-elem">Stack</a></div>
-        </div>
-    </nav>
-
-    <header class="hero">
-        <div class="hero-tagline split-chars">System Online // Bargarh, OD</div>
-        <h1 class="hero-title">
-            <div class="split-lines">Motion</div>
-            <div class="split-lines">Graphics</div>
-        </h1>
-        <div class="scroll-indicator">
-            <span>Scroll</span>
-            <div class="scroll-line"></div>
-        </div>
+        <div class="absolute bottom-10 z-10 animate-bounce text-[#00d2ff] opacity-70 hidden-up observe delay-2">↓ Scroll to Begin</div>
     </header>
 
-    <section class="about-grid" id="about">
-        <div class="about-left">
-            <div class="stat">
-                <span class="stat-num">21</span>
-                <span class="stat-label">Years of Age</span>
-            </div>
-            <div class="stat">
-                <span class="stat-num">B.Sc</span>
-                <span class="stat-label">Chemistry Grad</span>
-            </div>
-            <div class="stat">
-                <span class="stat-num">04</span>
-                <span class="stat-label">Core Softwares</span>
-            </div>
+    <section class="max-w-7xl mx-auto px-6 py-32 flex flex-col md:flex-row items-center justify-between gap-10">
+        <div class="w-full md:w-1/4 hidden-left observe">
+            <video autoplay loop muted playsinline class="rounded-2xl shadow-[0_0_30px_rgba(0,210,255,0.15)] w-full object-cover aspect-square md:aspect-auto">
+                <source src="Slide-1L.mp4" type="video/mp4">
+            </video>
         </div>
-        <div class="about-right">
-            <p class="split-words">My journey into visual storytelling is unconventional. I approach motion graphics with the <strong>analytical precision</strong> of a science background.</p>
-            <p class="split-words">Whether emulating the depth of Sony lenses or rhythm-syncing VFX, I treat every frame like an equation waiting to be solved. <strong>Calculated, clean, cinematic.</strong></p>
-        </div>
-    </section>
-
-    <div class="marquee-wrapper">
-        <div class="marquee-inner">
-            <div class="marquee-part">
-                <h3>Visual Storytelling</h3><span class="star">✦</span>
-                <h3>Advanced Compositing</h3><span class="star">✦</span>
-                <h3>Kinetic Typography</h3><span class="star">✦</span>
-            </div>
-            <div class="marquee-part">
-                <h3>Visual Storytelling</h3><span class="star">✦</span>
-                <h3>Advanced Compositing</h3><span class="star">✦</span>
-                <h3>Kinetic Typography</h3><span class="star">✦</span>
-            </div>
-        </div>
-    </div>
-
-    <section class="portfolio-sections" id="work">
-        <div class="spine-line"></div>
         
-        <div class="section-block">
-            <div class="glass-card magnetic-trigger">
-                <span class="card-num">// 001. VFX</span>
-                <h2 class="card-title split-lines">VFX Integration & Compositing</h2>
-                <p class="card-desc">Pushing the boundaries of raw footage. Advanced node and layer-based visual effects built to augment physical reality seamlessly.</p>
-                <div class="video-box"><video autoplay loop muted playsinline><source src="B1Meteor.mp4" type="video/mp4"></video></div>
-            </div>
+        <div class="w-full md:w-2/4 text-center hidden-up observe z-10">
+            <h2 class="text-sm font-bold tracking-[0.3em] gojo-blue uppercase mb-4">About Me</h2>
+            <p class="text-2xl md:text-4xl font-light leading-relaxed text-gray-200">
+                A dedicated B.Sc. Chemistry graduate <span class="gojo-blue font-bold">(8.0 CGPA)</span> bridging the gap between analytical science and digital storytelling.
+            </p>
         </div>
 
-        <div class="section-block">
-            <div class="glass-card magnetic-trigger">
-                <span class="card-num">// 002. LENS</span>
-                <h2 class="card-title split-lines">Cinematic Lighting & Aesthetics</h2>
-                <p class="card-desc">Emulating professional camera setups. Utilizing deep color grading and environmental mapping to craft movie-grade atmospheres.</p>
-                <div class="video-box"><video autoplay loop muted playsinline><source src="B2Beach.mp4" type="video/mp4"></video></div>
-            </div>
+        <div class="w-full md:w-1/4 hidden-right observe">
+            <video autoplay loop muted playsinline class="rounded-2xl shadow-[0_0_30px_rgba(0,210,255,0.15)] w-full object-cover aspect-square md:aspect-auto">
+                <source src="Slide-1R.mp4" type="video/mp4">
+            </video>
         </div>
+    </section>
+    
 
-        <div class="section-block">
-            <div class="glass-card magnetic-trigger">
-                <span class="card-num">// 003. FLOW</span>
-                <h2 class="card-title split-lines">Trend Sync & Pacing</h2>
-                <p class="card-desc">High-impact editing calculated to hold retention. Driven by hyper-smooth transitions, speed ramping, and heavy audio rhythm synchronization.</p>
-                <div class="video-box"><video autoplay loop muted playsinline><source src="B3Tiki.mp4" type="video/mp4"></video></div>
-            </div>
-        </div>
-
-        <div class="section-block">
-            <div class="glass-card magnetic-trigger">
-                <span class="card-num">// 004. TYPO</span>
-                <h2 class="card-title split-lines">Kinetic Typographic Systems</h2>
-                <p class="card-desc">Transforming static text into a physical element. Engineering fluid motion profiles that communicate style, hierarchy, and information simultaneously.</p>
-                <div class="video-box"><video autoplay loop muted playsinline><source src="B4Sngrm.mp4" type="video/mp4"></video></div>
+    <section class="py-20 relative">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-sm font-bold tracking-[0.3em] text-gray-500 uppercase mb-12 hidden-up observe">Technical Arsenal</h2>
+            
+            <div class="flex flex-wrap justify-center gap-6">
+                <div class="bubble delay-1 glass px-8 py-4 rounded-full border border-[#00d2ff]/30 text-[#00d2ff] font-bold text-xl backdrop-blur-md">
+                    <div class="floating">After Effects</div>
+                </div>
+                <div class="bubble delay-2 glass px-8 py-4 rounded-full border border-[#00d2ff]/30 text-[#00d2ff] font-bold text-xl backdrop-blur-md">
+                    <div class="floating">Node Video</div>
+                </div>
+                <div class="bubble delay-3 glass px-8 py-4 rounded-full border border-[#00d2ff]/30 text-[#00d2ff] font-bold text-xl backdrop-blur-md">
+                    <div class="floating">Ryzen Architecture</div>
+                </div>
             </div>
         </div>
     </section>
 
-    <section class="pipeline" id="arsenal">
-        <div class="section-header">
-            <span class="sh-small">System Specs</span>
-            <h2 class="sh-large split-lines">The Arsenal</h2>
-        </div>
-        <div class="arsenal-grid">
-            <div class="tech-item magnetic-trigger">
-                <div class="tech-icon">[AE]</div>
-                <h4>Core Compositing</h4>
-                <p>Heavy-duty timeline management, 3D camera mapping, and rendering executed within the industry standard post-production suite.</p>
-                <span class="tech-spec">AFTER EFFECTS CC</span>
+    <section class="max-w-6xl mx-auto px-6 py-32">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass p-10 rounded-[2rem] md:col-span-2 hidden-left observe hover:border-[#00d2ff]/50 transition duration-500 group">
+                <span class="text-xs font-bold tracking-widest text-[#00d2ff] uppercase">Education</span>
+                <h3 class="text-4xl font-bold mt-4 mb-2 group-hover:text-[#00d2ff] transition">B.Sc. in Chemistry</h3>
+                <p class="text-gray-400 text-lg">Core competencies in <span class="text-white">Electrochemistry</span> and <span class="text-white">Calculus</span>.</p>
             </div>
-            <div class="tech-item magnetic-trigger">
-                <div class="tech-icon">[MOB]</div>
-                <h4>Mobile & Node Systems</h4>
-                <p>Rapid deployment editing and node-based compositing designed for high-end social formatting on the fly.</p>
-                <span class="tech-spec">NODE VIDEO / CAPCUT</span>
+
+            <div class="glass p-10 rounded-[2rem] hidden-right observe hover:border-[#00d2ff]/50 transition duration-500 group">
+                <span class="text-xs font-bold tracking-widest text-gray-400 uppercase">Visuals</span>
+                <h3 class="text-2xl font-bold mt-4 group-hover:text-[#00d2ff] transition">Sony/Zeiss Aesthetic</h3>
+                <p class="text-gray-400 mt-2 text-sm">Cinematic color science & precision photography.</p>
             </div>
-            <div class="tech-item magnetic-trigger">
-                <div class="tech-icon">[HW]</div>
-                <h4>Rendering Engine</h4>
-                <p>Custom-built desktop workstation configured to handle dense RAM previews, heavy cache loads, and multi-layered rendering.</p>
-                <span class="tech-spec">RYZEN 5 5600G / 8GB / B450M</span>
+
+            <div class="glass p-10 rounded-[2rem] hidden-left observe hover:border-[#00d2ff]/50 transition duration-500 group">
+                <span class="text-xs font-bold tracking-widest text-gray-400 uppercase">Editing</span>
+                <h3 class="text-2xl font-bold mt-4 group-hover:text-[#00d2ff] transition">Post-Production</h3>
+                <p class="text-gray-400 mt-2 text-sm">Mastering flow, timing, and VFX composition.</p>
             </div>
-            <div class="tech-item magnetic-trigger">
-                <div class="tech-icon">[CAM]</div>
-                <h4>Optical Capture</h4>
-                <p>Shooting deep, flexible color profiles ready for intense post-production grading and AI-enhanced scaling.</p>
-                <span class="tech-spec">SAMSUNG S24 FE</span>
+
+            <div class="glass p-10 rounded-[2rem] md:col-span-2 hidden-right observe hover:border-[#00d2ff]/50 transition duration-500 group">
+                <span class="text-xs font-bold tracking-widest text-[#00d2ff] uppercase">Hardware</span>
+                <h3 class="text-3xl font-bold mt-4 group-hover:text-[#00d2ff] transition">Tech Enthusiast</h3>
+                <p class="text-gray-400 mt-4">Understanding the hardware that powers digital art, from component optimization to system stability.</p>
             </div>
         </div>
     </section>
 
-    <footer>
-        <div class="footer-giant">SANGRAM</div>
-        <div class="footer-bottom">
-            <div class="fb-left">
-                <h3>Sangram Keshari</h3>
-                <p>STATUS: RENDER COMPLETE // LOCATION: ODISHA</p>
+    <section class="max-w-6xl mx-auto px-6 py-20 hidden-up observe">
+        <h2 class="text-2xl font-bold mb-10 tracking-tight text-center">VISUAL ARCHIVE</h2>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            
+            <div onclick="toggleVideo(this)" class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer shadow-[0_0_25px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] transition-all duration-300 transform active:scale-95">
+                <video src="B1Meteor.mp4" loop muted playsinline class="absolute inset-0 w-full h-full object-cover transition duration-700"></video>
+                <div class="overlay-content absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 backdrop-blur-sm bg-black/40">
+                    <i class="fa-solid fa-play text-white text-3xl mb-3 drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"></i>
+                    <span class="font-bold tracking-widest text-sm text-white drop-shadow-lg">VFX</span>
+                </div>
             </div>
-            <div class="socials">
-                <div class="magnetic-wrap"><a href="https://www.youtube.com/@SANGRAMYT" target="_blank" class="social-link magnetic-elem">YouTube</a></div>
-                <div class="magnetic-wrap"><a href="https://www.instagram.com/iamsngrm" target="_blank" class="social-link magnetic-elem">Instagram</a></div>
-                <div class="magnetic-wrap"><a href="https://discord.com/invite/kKM75jmQwu" target="_blank" class="social-link magnetic-elem">Discord</a></div>
+
+            <div onclick="toggleVideo(this)" class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer shadow-[0_0_25px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] transition-all duration-300 transform active:scale-95">
+                <video src="B2Beach.mp4" loop muted playsinline class="absolute inset-0 w-full h-full object-cover transition duration-700"></video>
+                <div class="overlay-content absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 backdrop-blur-sm bg-black/40">
+                    <i class="fa-solid fa-play text-white text-3xl mb-3 drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"></i>
+                    <span class="font-bold tracking-widest text-sm text-white drop-shadow-lg">CINEMATIC</span>
+                </div>
             </div>
+
+            <div onclick="toggleVideo(this)" class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer shadow-[0_0_25px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] transition-all duration-300 transform active:scale-95">
+                <video src="B3Tiki.mp4" loop muted playsinline class="absolute inset-0 w-full h-full object-cover transition duration-700"></video>
+                <div class="overlay-content absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 backdrop-blur-sm bg-black/40">
+                    <i class="fa-solid fa-play text-white text-3xl mb-3 drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"></i>
+                    <span class="font-bold tracking-widest text-sm text-white drop-shadow-lg">TREND</span>
+                </div>
+            </div>
+
+            <div onclick="toggleVideo(this)" class="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden cursor-pointer shadow-[0_0_25px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] transition-all duration-300 transform active:scale-95">
+                <video src="B4Sngrm.mp4" loop muted playsinline class="absolute inset-0 w-full h-full object-cover transition duration-700"></video>
+                <div class="overlay-content absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 backdrop-blur-sm bg-black/40">
+                    <i class="fa-solid fa-play text-white text-3xl mb-3 drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"></i>
+                    <span class="font-bold tracking-widest text-sm text-white drop-shadow-lg">TYPOGRAPHY</span>
+                </div>
+            </div>
+
         </div>
+    </section>
+
+    <section class="max-w-4xl mx-auto px-6 py-32 text-center hidden-up observe">
+        <h2 class="text-4xl md:text-6xl font-black mb-8">Ready to create?</h2>
+        
+        <a href="mailto:skgartia152@gmail.com" class="inline-block bg-white text-black px-12 py-4 rounded-full font-bold text-lg hover:bg-[#00d2ff] hover:text-white transition duration-300 transform active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(0,210,255,0.6)] mb-12">
+            Connect With Me
+        </a>
+        
+        <div class="flex justify-center gap-8 mt-4">
+            <a href="https://www.youtube.com/@SangramOfficial" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-[#00d2ff] transition duration-300 transform hover:scale-110 active:scale-90">
+                <i class="fa-brands fa-youtube text-4xl drop-shadow-md"></i>
+            </a>
+            <a href="https://www.instagram.com/sngrm.fx" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-[#00d2ff] transition duration-300 transform hover:scale-110 active:scale-90">
+                <i class="fa-brands fa-instagram text-4xl drop-shadow-md"></i>
+            </a>
+            <a href="https://discord.com/invite/kKM75jmQwu" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-[#00d2ff] transition duration-300 transform hover:scale-110 active:scale-90">
+                <i class="fa-brands fa-discord text-4xl drop-shadow-md"></i>
+            </a>
+        </div>
+    </section>
+
+    <footer class="py-10 text-center text-gray-700 text-sm z-10 relative">
+        &copy; 2026 SNGRM. Crafted with logic and light.
     </footer>
 
     <script>
-        // ---------------------------------------------------------
-        // 1. LENIS SMOOTH SCROLL INIT (The Apple Feel)
-        // ---------------------------------------------------------
-        const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Exponential easing
-            direction: 'vertical',
-            gestureDirection: 'vertical',
-            smooth: true,
-            mouseMultiplier: 1,
-            smoothTouch: false,
-        });
-
-        // Integrate Lenis with GSAP ScrollTrigger
-        lenis.on('scroll', ScrollTrigger.update);
-        gsap.ticker.add((time) => { lenis.raf(time * 1000); });
-        gsap.ticker.lagSmoothing(0, 0);
-
-        // Prevent scrolling during preloader
-        lenis.stop();
-
-        // ---------------------------------------------------------
-        // 2. PRELOADER & HERO REVEAL SEQUENCE
-        // ---------------------------------------------------------
-        const counter = document.querySelector('.loader-math');
-        const bar = document.querySelector('.loader-bar-fill');
-        const status = document.querySelector('.loader-status');
-        let loadProgress = 0;
-
-        const statuses = ["Allocating Memory...", "Compiling Shaders...", "Loading 3D Meshes...", "Ready."];
-
-        let loaderInterval = setInterval(() => {
-            loadProgress += Math.floor(Math.random() * 8) + 1;
-            if (loadProgress >= 100) loadProgress = 100;
+        // --- Video Play/Pause Logic for Visual Archive ---
+        function toggleVideo(element) {
+            const video = element.querySelector('video');
+            const overlay = element.querySelector('.overlay-content');
             
-            // Format number to 000
-            counter.innerText = loadProgress.toString().padStart(3, '0');
-            bar.style.width = loadProgress + '%';
-            
-            // Update fake status
-            if(loadProgress > 25) status.innerText = statuses[1];
-            if(loadProgress > 65) status.innerText = statuses[2];
-
-            if (loadProgress === 100) {
-                clearInterval(loaderInterval);
-                status.innerText = statuses[3];
-                
-                setTimeout(() => {
-                    gsap.to(".preloader", {
-                        yPercent: -100, duration: 1.5, ease: "power4.inOut",
-                        onComplete: () => {
-                            document.querySelector('.preloader').style.display = 'none';
-                            lenis.start(); // Unlock scrolling
-                            initHeroAnimations();
-                        }
-                    });
-                }, 600);
+            if (video.paused) {
+                video.play();
+                overlay.style.opacity = '0'; 
+                overlay.classList.remove('group-hover:opacity-100');
+            } else {
+                video.pause();
+                overlay.style.opacity = '1';
+                overlay.classList.add('group-hover:opacity-100');
             }
-        }, 40);
-
-        // ---------------------------------------------------------
-        // 3. ADVANCED TEXT SPLITTING ALGORITHMS
-        // ---------------------------------------------------------
-        // Function to wrap text in spans for animation
-        const splitTextSetup = () => {
-            // Split Lines
-            document.querySelectorAll('.split-lines').forEach(el => {
-                let text = el.innerText; el.innerHTML = '';
-                let wrapper = document.createElement('div');
-                wrapper.style.overflow = 'hidden'; wrapper.style.display = 'inline-block';
-                let inner = document.createElement('div');
-                inner.innerText = text; inner.style.transform = 'translateY(110%)'; inner.classList.add('gsap-line');
-                wrapper.appendChild(inner); el.appendChild(wrapper);
-            });
-            // Split Words
-            document.querySelectorAll('.split-words').forEach(el => {
-                let words = el.innerText.split(' '); el.innerHTML = '';
-                words.forEach(word => {
-                    let wrapper = document.createElement('span');
-                    wrapper.style.overflow = 'hidden'; wrapper.style.display = 'inline-block'; wrapper.style.marginRight = '8px';
-                    let inner = document.createElement('span');
-                    inner.innerText = word; inner.style.transform = 'translateY(110%)'; inner.classList.add('gsap-word');
-                    wrapper.appendChild(inner); el.appendChild(wrapper);
-                });
-            });
-        };
-        splitTextSetup();
-
-        function initHeroAnimations() {
-            const tl = gsap.timeline();
-            tl.to('.hero-title .gsap-line', { y: '0%', duration: 1.2, stagger: 0.1, ease: "power4.out" })
-              .to('.hero-tagline', { opacity: 1, duration: 1 }, "-=0.8")
-              .to('.model-container', { opacity: 1, scale: 1, duration: 2, ease: "power3.out" }, "-=1.5");
         }
 
-        // ---------------------------------------------------------
-        // 4. CUSTOM CURSOR & MAGNETIC BUTTONS
-        // ---------------------------------------------------------
-        const cursorDot = document.querySelector('.cursor-dot');
-        const cursorRing = document.querySelector('.cursor-ring');
-        
-        // Use GSAP quickTo for highly performant cursor tracking
-        let xToDot = gsap.quickTo(".cursor-dot", "x", {duration: 0.1, ease: "power3"});
-        let yToDot = gsap.quickTo(".cursor-dot", "y", {duration: 0.1, ease: "power3"});
-        let xToRing = gsap.quickTo(".cursor-ring", "x", {duration: 0.4, ease: "power3"});
-        let yToRing = gsap.quickTo(".cursor-ring", "y", {duration: 0.4, ease: "power3"});
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // --- SMOOTH Background Video Logic ---
+            const bgVideo = document.getElementById('bgVideo');
+            let isScrolling;
 
-        window.addEventListener("mousemove", (e) => {
-            xToDot(e.clientX); yToDot(e.clientY);
-            xToRing(e.clientX); yToRing(e.clientY);
-        });
+            window.addEventListener('scroll', () => {
+                // Clear the timeout while scrolling is actively happening
+                window.clearTimeout(isScrolling);
 
-        // Add hover classes
-        document.querySelectorAll('a, .magnetic-trigger').forEach(el => {
-            el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-            el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
-        });
+                // Play the video smoothly if it's currently paused
+                if (bgVideo && bgVideo.paused) {
+                    bgVideo.play().catch(e => console.log("Playback blocked:", e));
+                }
 
-        // Magnetic Effect Math
-        document.querySelectorAll('.magnetic-wrap').forEach(wrap => {
-            const elem = wrap.querySelector('.magnetic-elem');
-            wrap.addEventListener('mousemove', (e) => {
-                const rect = wrap.getBoundingClientRect();
-                // Calculate distance from center
-                const hx = rect.left + rect.width / 2;
-                const hy = rect.top + rect.height / 2;
-                const dx = (e.clientX - hx) * 0.3; // 0.3 is the magnetic strength
-                const dy = (e.clientY - hy) * 0.3;
-                gsap.to(elem, { x: dx, y: dy, duration: 0.4, ease: "power3.out" });
+                // Pause the video 150ms after the user stops scrolling
+                isScrolling = setTimeout(() => {
+                    if (bgVideo && !bgVideo.paused) {
+                        bgVideo.pause();
+                    }
+                }, 150);
             });
-            wrap.addEventListener('mouseleave', () => {
-                // Snap back to center
-                gsap.to(elem, { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.3)" });
-            });
+
+            // --- Scroll Reveal Animations ---
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('show');
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+            const hiddenElements = document.querySelectorAll('.observe');
+            hiddenElements.forEach((el) => observer.observe(el));
+
+            // --- Floating Bubbles Pop Animation ---
+            const bubbleObserver = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('pop');
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            const bubbles = document.querySelectorAll('.bubble');
+            bubbles.forEach((el) => bubbleObserver.observe(el));
         });
-
-        // ---------------------------------------------------------
-        // 5. MOUSE-TRACKING GLASS GLOW (SaaS Aesthetic)
-        // ---------------------------------------------------------
-        document.querySelectorAll('.glass-card').forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left; // x position within the element
-                const y = e.clientY - rect.top;  // y position within the element
-                card.style.setProperty('--mouse-x', `${x}px`);
-                card.style.setProperty('--mouse-y', `${y}px`);
-            });
-        });
-
-        // ---------------------------------------------------------
-        // 6. SCROLL ANIMATIONS (Observers & Timelines)
-        // ---------------------------------------------------------
-        gsap.registerPlugin(ScrollTrigger);
-
-        // Infinite Marquee logic
-        gsap.to('.marquee-inner', {
-            xPercent: -50, ease: "none", duration: 15, repeat: -1
-        });
-
-        // Scroll reveals for Text
-        document.querySelectorAll('.about-right').forEach(sec => {
-            gsap.to(sec.querySelectorAll('.gsap-word'), {
-                scrollTrigger: { trigger: sec, start: "top 80%" },
-                y: '0%', duration: 0.8, stagger: 0.015, ease: "power3.out"
-            });
-        });
-
-        document.querySelectorAll('.glass-card, .section-header').forEach(sec => {
-            gsap.to(sec.querySelectorAll('.gsap-line'), {
-                scrollTrigger: { trigger: sec, start: "top 85%" },
-                y: '0%', duration: 1, stagger: 0.1, ease: "power4.out"
-            });
-        });
-
-        // ---------------------------------------------------------
-        // 7. THE MASTER 3D FLIGHT PATH (Z-Depth Math + Rotations)
-        // ---------------------------------------------------------
-        const model = document.querySelector('model-viewer');
-        // Proxy object holds the raw data, GSAP animates this, onUpdate feeds to Model
-        const rot = { pitch: 0, yaw: 0, roll: 0 }; 
-
-        const updateModel3D = () => {
-            if(model.setAttribute) {
-                model.setAttribute('orientation', `${rot.pitch}deg ${rot.yaw}deg ${rot.roll}deg`);
-            }
-        };
-
-        // Create main ScrollTrigger timeline for the bird
-        let flightPath = gsap.timeline({
-            scrollTrigger: {
-                trigger: "#work",
-                start: "top 90%",
-                endTrigger: "#arsenal",
-                end: "top 40%",
-                scrub: 2, // 2 seconds of smooth catch-up delay
-            }
-        });
-
-        // Frame 1: Dive Right to VFX (Scale up = flies closer to screen)
-        flightPath.to(".model-container", { x: "55vw", y: "15vh", scale: 1.3, ease: "power1.inOut" }, "f1")
-          .to(rot, { pitch: 15, yaw: 25, roll: -20, onUpdate: updateModel3D, ease: "power1.inOut" }, "f1")
-          
-        // Frame 2: Bank Left to Cinematic (Scale down = flies into background)
-        .to(".model-container", { x: "0vw", y: "40vh", scale: 0.75, ease: "power1.inOut" }, "f2")
-        .to(rot, { pitch: -5, yaw: -160, roll: 20, onUpdate: updateModel3D, ease: "power1.inOut" }, "f2")
-
-        // Frame 3: Bank Right to Trend
-        .to(".model-container", { x: "55vw", y: "65vh", scale: 1.25, ease: "power1.inOut" }, "f3")
-        .to(rot, { pitch: 12, yaw: 20, roll: -15, onUpdate: updateModel3D, ease: "power1.inOut" }, "f3")
-
-        // Frame 4: Level out Left for Typo
-        .to(".model-container", { x: "0vw", y: "90vh", scale: 1, ease: "power1.inOut" }, "f4")
-        .to(rot, { pitch: 0, yaw: -180, roll: 0, onUpdate: updateModel3D, ease: "power1.inOut" }, "f4")
-        
-        // Frame 5: Final Epic Dive down into the Tech Stack section
-        .to(".model-container", { x: "35vw", y: "135vh", scale: 1.6, ease: "power1.inOut" }, "f5")
-        .to(rot, { pitch: 35, yaw: -20, roll: -15, onUpdate: updateModel3D, ease: "power1.inOut" }, "f5");
-
     </script>
 </body>
 </html>
